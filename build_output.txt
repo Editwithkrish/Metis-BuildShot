@@ -1,0 +1,84 @@
+﻿
+> metis@0.1.0 build
+> next build
+
+node.exe : ΓÜá Warning: 
+Next.js inferred your 
+workspace root, but it may 
+not be correct.
+At C:\Program 
+Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS 
+$args
++   
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : 
+    NotSpecified: (ΓÜá Warni  
+  ng: Ne...not be correct.:   
+ String) [], RemoteExcepti    
+on
+    + FullyQualifiedErrorId : 
+    NativeCommandError
+ 
+ We detected multiple 
+lockfiles and selected the 
+directory of C:\Users\Asus\Dow
+nloads\Parvarish\package-lock.
+json as the root directory.
+ To silence this warning, set 
+`turbopack.root` in your 
+Next.js config, or consider 
+removing one of the lockfiles 
+if it's not needed.
+   See https://nextjs.org/docs
+/app/api-reference/config/next
+-config-js/turbopack#root-dire
+ctory for more information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\Asus\Downloads\P
+arvarish\Metis\package-lock.js
+on
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 4.6s
+  Running TypeScript ...
+Failed to compile.
+
+./components/ui/resizable.tsx:
+5:10
+Type error: 
+'"react-resizable-panels"' 
+has no exported member named 
+'PanelGroup'. Did you mean 
+'PanelProps'?
+
+[0m [90m 3 |[39m 
+[36mimport[39m [33m*[39m 
+[36mas[39m [33mReact[39m 
+[36mfrom[39m 
+[32m"react"[39m
+ [90m 4 |[39m 
+[36mimport[39m { 
+[33mGripVertical[39m } 
+[36mfrom[39m 
+[32m"lucide-react"[39m
+[31m[1m>[22m[39m[90m 5 
+|[39m [36mimport[39m { [33
+mPanelGroup[39m[33m,[39m 
+[33mPanel[39m[33m,[39m 
+[33mPanelResizeHandle[39m } 
+[36mfrom[39m [32m"react-res
+izable-panels"[39m
+ [90m   |[39m          
+[31m[1m^[22m[39m
+ [90m 6 |[39m
+ [90m 7 |[39m 
+[36mimport[39m { cn } 
+[36mfrom[39m 
+[32m"@/lib/utils"[39m
+ [90m 8 |[39m[0m
+Next.js build worker exited 
+with code: 1 and signal: null
