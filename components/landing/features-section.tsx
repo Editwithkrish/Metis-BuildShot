@@ -6,26 +6,26 @@ const features = [
   {
     number: "01",
     title: "Hybrid AI Detection",
-    description: "Detect malnutrition early using advanced image analysis combined with health metrics like BMI, growth patterns, and clinical symptoms for accurate risk assessment.",
-    stats: { value: "Early", label: "intervention saves lives" },
+    description: "Detect health risks and malnutrition early using image analysis + real-time health data across children, adults, and the elderly.",
+    stats: { value: "Cross", label: "age detection" },
   },
   {
     number: "02",
-    title: "Real-time Monitoring",
-    description: "Track health metrics continuously with automated alerts and dashboards. Get real-time risk scores and actionable health insights for every mother and child.",
-    stats: { value: "24/7", label: "health tracking" },
+    title: "Continuous Monitoring",
+    description: "Track vitals and health trends with automated dashboards. Get real-time risk scores and proactive health insights for early care intervention.",
+    stats: { value: "Full", label: "spectrum tracking" },
   },
   {
     number: "03",
-    title: "Personalized Guidance",
-    description: "Receive AI-powered nutrition recommendations based on local foods and preferences. Get multilingual support via chatbot, SMS, and voice for accessibility.",
-    stats: { value: "Tailored", label: "nutrition plans" },
+    title: "Personalized Nutrition",
+    description: "Localized nutrition guidance based on regional foods, tailored to individual metabolic profiles and chronic-risk conditions.",
+    stats: { value: "Global", label: "dietary logic" },
   },
   {
     number: "04",
-    title: "Healthcare Integration",
-    description: "Connect with doctors, access government health schemes, and get SOS alerts for urgent care. Bridge the gap between families and healthcare resources.",
-    stats: { value: "Connected", label: "care network" },
+    title: "Integrated Care",
+    description: "Built-in SOS alerts, digital consultations, and government scheme eligibility support for comprehensive healthcare accessibility.",
+    stats: { value: "Bridge", label: "to clinical care" },
   },
 ];
 

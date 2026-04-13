@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 
-const words = ["detect", "monitor", "nurture", "protect"];
+const words = ["detect", "monitor", "nurture", "protect", "guide"];
 
 function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   const letters = word.split("");
@@ -185,7 +185,7 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block whitespace-nowrap text-[#86efac]">Motherhood care,</span>
+            <span className="block whitespace-nowrap text-[#86efac]">Intelligent health,</span>
             <span className="block whitespace-nowrap">
               AI that will{" "}
               <span className="relative inline-block min-w-[280px]">
@@ -219,9 +219,9 @@ export function HeroSection() {
       >
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
-            { value: "70%", label: "cases preventable with early care" },
-            { value: "40%", label: "maternal awareness gap" },
-            { value: "Real-time", label: "malnutrition risk scoring" },
+            { value: "70%", label: "malnutrition cases are preventable" },
+            { value: "40%", label: "linked to awareness gaps" },
+            { value: "35%", label: "due to infrastructure gaps" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

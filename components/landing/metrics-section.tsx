@@ -4,25 +4,25 @@ import { useEffect, useState, useRef } from "react";
 
 const metrics = [
   { 
-    value: 8472, 
-    suffix: "+", 
-    prefix: "",
-    label: "Mothers & children monitored",
-    sublabel: "across rural & urban areas",
-  },
-  { 
-    value: 94, 
+    value: 70, 
     suffix: "%", 
     prefix: "",
-    label: "Malnutrition detection accuracy",
-    sublabel: "clinical vision AI performance",
+    label: "Preventable with early care",
+    sublabel: "severe malnutrition cases",
   },
   { 
-    value: 24, 
-    suffix: "/7", 
+    value: 40, 
+    suffix: "%", 
     prefix: "",
-    label: "Automated pediatric support",
-    sublabel: "AI-powered clinical guidance",
+    label: "Awareness gap reduction",
+    sublabel: "maternal education impact",
+  },
+  { 
+    value: 35, 
+    suffix: "%", 
+    prefix: "",
+    label: "Infrastructure gap bridging",
+    sublabel: "healthcare access improvements",
   },
 ];
 
@@ -239,7 +239,7 @@ export function MetricsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden">
+    <section id="metrics" ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden">
       <GridBackground />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">

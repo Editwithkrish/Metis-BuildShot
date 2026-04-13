@@ -7,44 +7,46 @@ const steps = [
     number: "01",
     title: "Screen",
     subtitle: "vitals & symptoms",
-    description: "Connect via rural health workers or personal devices. Capture weight, height, and age alongside image data of the mother or child for analysis.",
-    code: `// Capture vital health data
+    description: "Capture patient vitals (height, weight, age) and clinical symptoms. METIS uses cross-spectrum AI analysis for early health and malnutrition detection.",
+    code: `// Initialize patient health record
 const patient = await metis.initialize({
-  role: 'caregiver',
+  role: 'individual',
   vitals: {
-    height: 52, // cm
-    weight: 4.8, // kg
-    age: '4mo'
+    height: '172cm',
+    weight: '68kg',
+    age: '28y',
+    symptoms: ['fatigue', 'underweight']
   }
 });`,
   },
   {
     number: "02",
     title: "Analyze",
-    subtitle: "AI malnutrition scoring",
-    description: "Our multimodal AI (CNN + LLM) processes images and health data to generate localized malnutrition risk scores and identifies early clinical symptoms.",
-    code: `// Multimodal AI detection
+    subtitle: "AI risk scoring",
+    description: "Our hybrid AI models process multimodal data to generate real-time health risk scores and provide actionable clinical insights.",
+    code: `// Generate AI health risk score
 const analysis = await patient.analyze({
-  images: [photo_01, photo_02],
-  metrics: true,
-  localized: 'India/Maharashtra'
+  method: 'hybrid_multimodal',
+  vision: true,
+  biometrics: true
 });
 
-// Output: Risk Level 4/10 (Moderate)`,
+// Output: Risk Level 4/10 (Moderate)
+// Alert: Early nutritional deficiencies detected`,
   },
   {
     number: "03",
     title: "Act",
-    subtitle: "guidance & intervention",
-    description: "Receive personalized nutrition plans based on local diets. If risks are high, automatically connect with local NGOs or government healthcare centers.",
-    code: `// Automated nutrition guidance
+    subtitle: "care & nutrition",
+    description: "Receive personalized nutrition plans based on local foods. Connect with healthcare providers and access relevant global health resources.",
+    code: `// Localized nutrition & care plan
 const plan = await metis.generatePlan({
   risk: analysis.score,
-  dietary: 'vegetarian_local',
-  languages: ['Marathi', 'Hindi']
+  diet: 'local_regional',
+  languages: ['English', 'Hindi']
 });
 
-metis.connect('Anganwadi_Center_057');`,
+metis.alert('health_node_42');`,
   },
 ];
 

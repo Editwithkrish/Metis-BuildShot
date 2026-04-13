@@ -120,7 +120,7 @@ export function FooterSection() {
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                AI-powered nutrition and health monitoring for maternal and newborn care. Early detection, personalized guidance, and clinical impact tracking.
+                AI-powered nutrition and health monitoring for all ages. Early detection, personalized guidance, and global clinical impact tracking.
               </p>
 
               {/* Social Links */}
@@ -167,13 +167,13 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/30">
-            &copy; 2025 METIS by Team BuildShot. All rights reserved.
+            &copy; 2026 METIS by Team BuildShot. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4 text-sm text-white/30">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#eca8d6]" />
-              24/7 health monitoring active
+              <span className="w-2 h-2 rounded-full bg-[#86efac]" />
+              24/7 AI health monitoring active
             </span>
           </div>
         </div>
