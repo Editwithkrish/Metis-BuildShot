@@ -8,7 +8,7 @@ const footerLinks = {
     { name: "Features", href: "#features" },
     { name: "How it works", href: "#how-it-works" },
     { name: "Research", href: "#" },
-    { name: "Download app", href: "#" },
+    { name: "Download app", href: "/auth" },
   ],
   Resources: [
     { name: "Documentation", href: "#" },

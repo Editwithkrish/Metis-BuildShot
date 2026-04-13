@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 
 const navLinks = [
   { name: "Features",      href: "#features"      },
@@ -69,12 +70,14 @@ export function Navigation() {
             <a href="#" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
               Sign in
             </a>
-            <Button
-              size="sm"
-              className={`rounded-full transition-all duration-500 font-bold ${isScrolled ? "bg-black hover:bg-black/90 text-[#86efac] px-4 h-8 text-xs" : "bg-[#86efac] hover:bg-[#86efac]/90 text-black px-6"}`}
-            >
-              Launch App
-            </Button>
+            <Link href="/auth">
+              <Button
+                size="sm"
+                className={`rounded-full transition-all duration-500 font-bold ${isScrolled ? "bg-black hover:bg-black/90 text-[#86efac] px-4 h-8 text-xs" : "bg-[#86efac] hover:bg-[#86efac]/90 text-black px-6"}`}
+              >
+                Launch App
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -141,12 +144,14 @@ export function Navigation() {
               >
                 Sign in
               </Button>
-              <Button 
-                className="flex-1 bg-[#86efac] text-black rounded-full h-14 text-base font-bold shadow-[0_0_20px_rgba(134,239,172,0.2)]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Launch App
-              </Button>
+              <Link href="/auth" className="flex-1">
+                <Button 
+                  className="w-full bg-[#86efac] text-black rounded-full h-14 text-base font-bold shadow-[0_0_20px_rgba(134,239,172,0.2)]"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Launch App
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

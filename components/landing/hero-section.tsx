@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 
 const words = ["detect", "monitor", "nurture", "protect", "guide"];
 
@@ -201,9 +202,11 @@ export function HeroSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <button className="h-14 px-10 bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(134,239,172,0.3)]">
-            Launch App
-          </button>
+          <Link href="/auth">
+            <button className="h-14 px-10 bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(134,239,172,0.3)]">
+              Launch App
+            </button>
+          </Link>
           <button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white font-medium rounded-full border border-white/10 transition-all backdrop-blur-md">
             Watch Demo
           </button>
