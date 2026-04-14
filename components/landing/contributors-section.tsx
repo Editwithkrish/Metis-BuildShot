@@ -8,27 +8,27 @@ const contributors = [
     name: "Krishna",
     role: "Lead Architect",
     bio: "Visionary behind METIS clinical synchronization architecture.",
-    github: "https://github.com",
-    twitter: "https://twitter.com",
-    linkedin: "https://linkedin.com",
+    github: "https://github.com/Editwithkrish",
+    twitter: "https://x.com/kaxxsays",
+    linkedin: "https://www.linkedin.com/in/krishnaa-jha/",
     color: "#86efac"
   },
   {
     name: "Pratik",
     role: "AI Research",
     bio: "Developing CNN-based analytical models for maternal health tracking.",
-    github: "https://github.com",
-    twitter: "https://twitter.com",
-    linkedin: "https://linkedin.com",
+    github: "https://github.com/pratikpatwe",
+    twitter: "https://x.com/pratik_patwe",
+    linkedin: "https://www.linkedin.com/in/pratik-patwe-7741a0255/",
     color: "#60a5fa"
   },
   {
     name: "Parth",
     role: "Product Design",
     bio: "Crafting the high-fidelity user experience for healthcare accessibility.",
-    github: "https://github.com",
-    twitter: "https://twitter.com",
-    linkedin: "https://linkedin.com",
+    github: "https://github.com/parthdhatrak",
+    twitter: "https://x.com/DhatrakPar34802",
+    linkedin: "https://www.linkedin.com/in/parth-dhatrak-215306317/",
     color: "#f472b6"
   }
 ];
@@ -133,9 +133,14 @@ export function ContributorsSection() {
               <p className="text-sm text-muted-foreground mt-1 text-[#86efac]/60">We're always looking for clinical experts and AI researchers.</p>
             </div>
           </div>
-          <button className="px-8 py-4 bg-[#86efac] text-black font-bold text-sm tracking-widest uppercase hover:bg-white transition-all transform active:scale-95">
+          <a 
+            href="https://github.com/Editwithkrish/Metis-BuildShot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-4 bg-[#86efac] text-black font-bold text-sm tracking-widest uppercase hover:bg-white transition-all transform active:scale-95 inline-block text-center"
+          >
             Become a Contributor
-          </button>
+          </a>
         </div>
       </div>
     </section>
