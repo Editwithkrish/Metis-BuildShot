@@ -164,9 +164,13 @@ User
 
 ---
 
-## 👥 Team
+## 👥 Team & Contributors
 
 **Team BuildShot** — MIT-ADT University, Pune, India
+
+- **Krishna** — Lead Architect & Ecosystem Integration
+- **Pratik** — AI Research & Core Backend Developer
+- **Varad** — Product Design & Frontend Development
 
 ---
 

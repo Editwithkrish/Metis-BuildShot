@@ -38,6 +38,16 @@ export default function OnBoardingPage() {
     setIsVisible(true);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("metis_onboarding_data", JSON.stringify({
+        ...formData,
+        role: selectedRole,
+        goal: selectedGoal
+      }));
+    }
+  }, [formData, selectedRole, selectedGoal]);
+
   const progress = (currentStep / steps.length) * 100;
 
   const nextStep = () => {
@@ -406,7 +416,7 @@ export default function OnBoardingPage() {
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
-                    <Link href="/">
+                    <Link href="/dashboard">
                       <Button className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95">
                         Launch Dashboard
                       </Button>
