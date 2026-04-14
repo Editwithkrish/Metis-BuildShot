@@ -23,7 +23,7 @@ const contributors = [
     color: "#60a5fa"
   },
   {
-    name: "Varad",
+    name: "Parth",
     role: "Product Design",
     bio: "Crafting the high-fidelity user experience for healthcare accessibility.",
     github: "https://github.com",

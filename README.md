@@ -170,7 +170,7 @@ User
 
 - **Krishna** — Lead Architect & Ecosystem Integration
 - **Pratik** — AI Research & Core Backend Developer
-- **Varad** — Product Design & Frontend Development
+- **Parth** — Product Design & Frontend Development
 
 ---
 
