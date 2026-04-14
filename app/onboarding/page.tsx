@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Activity, ArrowRight, CheckCircle2, Globe, Heart, Shield, User, Users, Microscope } from "lucide-react";
+import { Activity, ArrowRight, CheckCircle2, Globe, Heart, Shield, User, Users, Microscope, Baby, HeartPulse } from "lucide-react";
 import Link from "next/link";
 
 const steps = [
   { id: 1, title: "Identity", description: "Define your role within the ecosystem" },
   { id: 2, title: "Context", description: "Provide localized clinical environment" },
-  { id: 3, title: "Priorities", description: "Select primary health monitoring goals" },
-  { id: 4, title: "Finalize", description: "Synchronizing with METIS cloud" },
+  { id: 3, title: "Biometrics", description: "Clinical health baseline data" },
+  { id: 4, title: "Preferences", description: "Communication & sync protocols" },
+  { id: 5, title: "Priorities", description: "Select primary health monitoring goals" },
+  { id: 6, title: "Finalize", description: "Synchronizing with METIS cloud" },
 ];
 
 export default function OnBoardingPage() {
@@ -19,6 +21,18 @@ export default function OnBoardingPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    detail: "",
+    language: "English",
+    alertType: "SMS",
+    dataSource: "Manual",
+    weight: "",
+    height: "",
+    age: "",
+    feedingStatus: "Exclusive",
+    clinicalLoad: "Standard",
+  });
 
   useEffect(() => {
     setIsVisible(true);
@@ -71,7 +85,7 @@ export default function OnBoardingPage() {
             <div className="grid lg:grid-cols-12">
               {/* Left Side: Step Indicator */}
               <div className="lg:col-span-4 bg-foreground/[0.02] border-r border-foreground/10 p-8 lg:p-10">
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-6">
                   {steps.map((step) => (
                     <div 
                       key={step.id} 
@@ -79,15 +93,15 @@ export default function OnBoardingPage() {
                         currentStep >= step.id ? "opacity-100" : "opacity-30"
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-mono text-sm shrink-0 ${
+                      <div className={`w-7 h-7 rounded-full border flex items-center justify-center font-mono text-[10px] shrink-0 ${
                         currentStep === step.id ? "border-[#86efac] text-[#86efac] bg-[#86efac]/10" : 
                         currentStep > step.id ? "border-[#86efac] bg-[#86efac] text-black" : "border-foreground/20 text-muted-foreground"
                       }`}>
-                        {currentStep > step.id ? <CheckCircle2 className="w-4 h-4" /> : step.id}
+                        {currentStep > step.id ? <CheckCircle2 className="w-3 h-3" /> : step.id}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{step.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{step.description}</p>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-white truncate">{step.title}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{step.description}</p>
                       </div>
                     </div>
                   ))}
@@ -95,13 +109,15 @@ export default function OnBoardingPage() {
               </div>
 
               {/* Right Side: Content */}
-              <div className="lg:col-span-8 p-8 lg:p-12 min-h-[450px] flex flex-col">
+              <div className="lg:col-span-8 p-8 lg:p-12 min-h-[480px] flex flex-col">
                 {currentStep === 1 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Who are you representing?</h2>
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid sm:grid-cols-2 gap-3">
                       {[
+                        { id: 'mother', label: 'Mother', sub: 'Maternal health tracking', icon: Baby },
                         { id: 'ind', label: 'Individual', sub: 'Monitoring self or family', icon: User },
+                        { id: 'caregiver', label: 'Caregiver', sub: 'Assisting family health', icon: HeartPulse },
                         { id: 'doc', label: 'Medical Doctor', sub: 'Clinical patient tracking', icon: Activity },
                         { id: 'hworker', label: 'Health Worker', sub: 'Regional fieldwork', icon: Users },
                         { id: 'res', label: 'Researcher', sub: 'Clinical data analysis', icon: Microscope },
@@ -109,15 +125,15 @@ export default function OnBoardingPage() {
                         <button
                           key={role.id}
                           onClick={() => setSelectedRole(role.id)}
-                          className={`p-6 border text-left transition-all group ${
+                          className={`p-5 border text-left transition-all group ${
                             selectedRole === role.id 
                               ? "border-[#86efac] bg-[#86efac]/5" 
                               : "border-foreground/10 hover:border-[#86efac]/30 hover:bg-foreground/[0.02]"
                           }`}
                         >
-                          <role.icon className={`w-6 h-6 mb-4 transition-colors ${selectedRole === role.id ? "text-[#86efac]" : "text-muted-foreground"}`} />
-                          <p className="font-medium text-white">{role.label}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{role.sub}</p>
+                          <role.icon className={`w-5 h-5 mb-3 transition-colors ${selectedRole === role.id ? "text-[#86efac]" : "text-muted-foreground"}`} />
+                          <p className="font-medium text-white text-sm">{role.label}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{role.sub}</p>
                         </button>
                       ))}
                     </div>
@@ -127,7 +143,7 @@ export default function OnBoardingPage() {
                 {currentStep === 2 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Localized Precision</h2>
-                    <p className="text-muted-foreground mb-8">Select your primary geographical region to load relevant nutritional metadata and government scheme datasets.</p>
+                    <p className="text-muted-foreground mb-8 text-sm">Select your primary geographical region to load relevant nutritional metadata and government scheme datasets.</p>
                     <div className="space-y-4">
                       <div className="p-6 border border-[#86efac] bg-[#86efac]/5 flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -139,12 +155,193 @@ export default function OnBoardingPage() {
                         </div>
                         <CheckCircle2 className="text-[#86efac] w-5 h-5" />
                       </div>
-                      <p className="text-xs text-muted-foreground italic font-mono uppercase tracking-tight text-center mt-4">More regions being synchronized currently...</p>
+                      <p className="text-xs text-muted-foreground italic font-mono uppercase tracking-tight text-center mt-4 opacity-50">More regions being synchronized currently...</p>
                     </div>
                   </div>
                 )}
 
                 {currentStep === 3 && (
+                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <h2 className="text-2xl font-display text-white mb-8">Biometric Calibration</h2>
+                    
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Identifier / Full Name</label>
+                        <input 
+                          type="text" 
+                          placeholder="Search identifier..."
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                        />
+                      </div>
+
+                      {(selectedRole === 'mother' || selectedRole === 'ind' || selectedRole === 'caregiver') ? (
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Age {selectedRole === 'mother' ? '(Baby)' : ''}</label>
+                            <input 
+                              type="text" 
+                              placeholder="e.g. 6m / 28y"
+                              value={formData.age}
+                              onChange={(e) => setFormData({...formData, age: e.target.value})}
+                              className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Weight (kg)</label>
+                            <input 
+                              type="text" 
+                              placeholder="7.5"
+                              value={formData.weight}
+                              onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                              className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Height (cm)</label>
+                            <input 
+                              type="text" 
+                              placeholder="65"
+                              value={formData.height}
+                              onChange={(e) => setFormData({...formData, height: e.target.value})}
+                              className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Facility / Organization</label>
+                          <input 
+                            type="text" 
+                            placeholder="Enter clinic name..."
+                            value={formData.detail}
+                            onChange={(e) => setFormData({...formData, detail: e.target.value})}
+                            className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                          />
+                        </div>
+                      )}
+
+                      {selectedRole === 'mother' && (
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Breastfeeding Status</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {['Exclusive', 'Partial', 'Formula'].map(status => (
+                              <button
+                                key={status}
+                                onClick={() => setFormData({...formData, feedingStatus: status})}
+                                className={`py-2 text-[10px] border font-mono transition-all ${
+                                  formData.feedingStatus === status 
+                                    ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
+                                    : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
+                                }`}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {(selectedRole === 'doc' || selectedRole === 'hworker') && (
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Daily Clinical Load</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {['Standard', 'High', 'Critical'].map(load => (
+                              <button
+                                key={load}
+                                onClick={() => setFormData({...formData, clinicalLoad: load})}
+                                className={`py-2 text-[10px] border font-mono transition-all ${
+                                  formData.clinicalLoad === load 
+                                    ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
+                                    : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
+                                }`}
+                              >
+                                {load}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="pt-2 border-t border-foreground/5">
+                        <div className="flex items-center gap-3 text-[10px] text-[#86efac]/60 font-mono">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#86efac] animate-pulse" />
+                          <span>CNN BASAL METRIC SYNC ACTIVE</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <h2 className="text-2xl font-display text-white mb-8">System Preferences</h2>
+                    
+                    <div className="space-y-6">
+                      {/* Language selection */}
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Protocol Language</label>
+                        <div className="flex flex-wrap gap-2">
+                          {['English', 'Hindi', 'Marathi', 'Bengali'].map(lang => (
+                            <button
+                              key={lang}
+                              onClick={() => setFormData({...formData, language: lang})}
+                              className={`px-4 py-2 text-xs border font-mono transition-all ${
+                                formData.language === lang 
+                                  ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
+                                  : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
+                              }`}
+                            >
+                              {lang}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Alert type */}
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Alert Criticality Path</label>
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { id: 'In-App', label: 'Standard', sub: 'In-App Only' },
+                            { id: 'SMS', label: 'Urgent', sub: 'SMS Protocol' },
+                            { id: 'Call', label: 'Critical', sub: 'Automated Call' },
+                          ].map(type => (
+                            <button
+                              key={type.id}
+                              onClick={() => setFormData({...formData, alertType: type.id})}
+                              className={`p-3 border text-left transition-all ${
+                                formData.alertType === type.id 
+                                  ? "border-[#86efac] bg-[#86efac]/5" 
+                                  : "border-foreground/10 hover:border-foreground/20"
+                              }`}
+                            >
+                              <p className={`text-[10px] font-bold ${formData.alertType === type.id ? "text-white" : "text-muted-foreground"}`}>{type.label}</p>
+                              <p className="text-[9px] text-muted-foreground mt-1">{type.sub}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Data Source */}
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Primary Data Ingest</label>
+                        <select 
+                          value={formData.dataSource}
+                          onChange={(e) => setFormData({...formData, dataSource: e.target.value})}
+                          className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs appearance-none"
+                        >
+                          <option value="Manual">Manual Entry (Visual Self-Check)</option>
+                          <option value="Volunteer">Health Volunteer Linked</option>
+                          <option value="IoT">IoT Wearable Integration</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 5 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">What are your monitoring goals?</h2>
                     <div className="space-y-3">
@@ -177,35 +374,40 @@ export default function OnBoardingPage() {
                   </div>
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 6 && (
                   <div className="flex-1 flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-700">
                     <div className="w-20 h-20 rounded-full bg-[#86efac]/10 flex items-center justify-center mb-8 relative">
                       <div className="absolute inset-0 rounded-full border border-[#86efac] animate-ping opacity-20" />
                       <CheckCircle2 className="w-10 h-10 text-[#86efac]" />
                     </div>
                     <h2 className="text-3xl font-display text-white mb-4">Configuration Complete</h2>
-                    <p className="text-muted-foreground max-w-sm mb-8">Your clinical profile has been established. METIS is ready to begin real-time monitoring.</p>
+                    <p className="text-[#86efac] font-mono text-sm mb-2 opacity-80">ACCESS_GRANTED: {formData.name || 'USER_ID_NULL'}</p>
+                    <p className="text-muted-foreground max-w-sm mb-2">Welcome to the ecosystem.</p>
+                    <p className="text-muted-foreground max-w-sm mb-8 text-sm px-6">Your clinical profile, preference protocols, and localized datasets have been synchronized.</p>
                   </div>
                 )}
 
                 {/* Footer Controls */}
                 <div className="mt-auto pt-10 flex justify-between items-center border-t border-foreground/10">
-                  <span className="text-xs font-mono text-muted-foreground">step_0{currentStep}.sys</span>
-                  {currentStep < 4 ? (
+                  <span className="text-xs font-mono text-muted-foreground tracking-tighter overflow-hidden whitespace-nowrap opacity-50">
+                    ID: {selectedRole || "NULL"} // LANG: {formData.language.substring(0,3).toUpperCase()} // STEP: 0{currentStep}
+                  </span>
+                  {currentStep < 6 ? (
                     <Button 
                       onClick={nextStep}
                       disabled={
                         (currentStep === 1 && !selectedRole) || 
-                        (currentStep === 3 && !selectedGoal)
+                        (currentStep === 3 && !formData.name) ||
+                        (currentStep === 5 && !selectedGoal)
                       }
-                      className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)]"
+                      className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95"
                     >
                       Continue
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
                     <Link href="/">
-                      <Button className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)]">
+                      <Button className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95">
                         Launch Dashboard
                       </Button>
                     </Link>
@@ -216,7 +418,6 @@ export default function OnBoardingPage() {
           </Card>
         </div>
       </div>
-
       <style jsx global>{`
         .noise-overlay {
           position: relative;
