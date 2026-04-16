@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +17,10 @@ const steps = [
   { id: 6, title: "Finalize", description: "Synchronizing with METIS cloud" },
 ];
 
+
+
 export default function OnBoardingPage() {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
@@ -75,8 +79,8 @@ export default function OnBoardingPage() {
               <span className="w-8 h-px bg-[#86efac]/30" />
               <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Initialization Phase</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-display text-white">
-              Welcome to <span className="text-[#86efac]">METIS</span>
+            <h1 className="text-4xl lg:text-5xl font-display text-white flex items-center gap-3">
+              {t.onboarding.welcome} <img src="/logo.png" alt="METIS Logo" className="h-10 lg:h-12" />
             </h1>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -412,13 +416,13 @@ export default function OnBoardingPage() {
                       }
                       className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95"
                     >
-                      Continue
+                      {t.onboarding.continue}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
                     <Link href="/dashboard">
                       <Button className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95">
-                        Launch Dashboard
+                        {t.onboarding.launchDashboard}
                       </Button>
                     </Link>
                   )}

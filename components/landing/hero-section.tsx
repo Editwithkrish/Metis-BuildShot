@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n-context";
 
-const words = ["detect", "monitor", "nurture", "protect", "guide"];
+
 
 function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   const letters = word.split("");
@@ -105,9 +106,14 @@ function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   );
 }
 
+
+
 export function HeroSection() {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
+
+  const words = [t.hero.titleLine3, "detect", "monitor", "guide"];
 
   useEffect(() => {
     setIsVisible(true);
@@ -186,9 +192,9 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block whitespace-nowrap text-[#86efac]">Intelligent health,</span>
+            <span className="block whitespace-nowrap text-[#86efac]">{t.hero.titleLine1}</span>
             <span className="block whitespace-nowrap">
-              AI that will{" "}
+              {t.hero.titleLine2}
               <span className="relative inline-block min-w-[280px]">
                 <BlurWord word={words[wordIndex]} trigger={wordIndex} />
               </span>
@@ -204,11 +210,11 @@ export function HeroSection() {
         >
           <Link href="/auth">
             <button className="h-14 px-10 bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(134,239,172,0.3)]">
-              Launch App
+              {t.hero.ctaPrimary}
             </button>
           </Link>
           <button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white font-medium rounded-full border border-white/10 transition-all backdrop-blur-md">
-            Watch Demo
+            {t.hero.ctaSecondary}
           </button>
         </div>
         </div>
@@ -222,9 +228,9 @@ export function HeroSection() {
       >
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
-            { value: "70%", label: "malnutrition cases are preventable" },
-            { value: "40%", label: "linked to awareness gaps" },
-            { value: "35%", label: "due to infrastructure gaps" },
+            { value: t.stats.stat1Value, label: t.stats.stat1Label },
+            { value: t.stats.stat2Value, label: t.stats.stat2Label },
+            { value: t.stats.stat3Value, label: t.stats.stat3Label },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

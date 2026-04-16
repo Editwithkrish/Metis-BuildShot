@@ -2,18 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe, ChevronDown } from "lucide-react";
 import Link from "next/link";
-
-const navLinks = [
-  { name: "Features",      href: "#features"      },
-  { name: "How It Works",  href: "#how-it-works"  },
-  { name: "Impact",        href: "#metrics"       },
-  { name: "Resources",     href: "#integrations"  },
-  { name: "Security",      href: "#security"      },
-];
+import { useLanguage } from "@/lib/i18n-context";
+import { setGoogleTranslate } from "@/lib/translate-util";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navigation() {
+  const { t, language, setLanguage } = useLanguage();
+  
+  const navLinks = [
+    { name: t.nav.features,      href: "#features"      },
+    { name: t.nav.howItWorks,  href: "#how-it-works"  },
+    { name: t.nav.impact,        href: "#metrics"       },
+    { name: t.nav.resources,     href: "#integrations"  },
+    { name: t.nav.security,      href: "#security"      },
+  ];
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -47,8 +57,11 @@ export function Navigation() {
         >
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 group">
-            <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl text-[#86efac]" : "text-2xl text-[#86efac]"}`}>METIS</span>
-            <span className={`font-mono transition-all duration-500 ${isScrolled ? "text-[10px] mt-0.5 text-muted-foreground" : "text-xs mt-1 text-white/60"}`}>AI Intelligence</span>
+            <img 
+              src="/logo.png" 
+              alt="METIS Logo" 
+              className={`transition-all duration-500 ${isScrolled ? "h-8" : "h-10"}`} 
+            />
           </a>
 
           {/* Desktop Navigation */}
@@ -66,16 +79,46 @@ export function Navigation() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-6">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={`flex items-center gap-2 h-9 px-4 rounded-full border border-foreground/10 bg-foreground/[0.03] backdrop-blur-md transition-all hover:border-[#86efac]/30 hover:bg-[#86efac]/5 ${
+                    isScrolled ? "text-foreground/70 hover:text-foreground" : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  <Globe className="w-4 h-4 text-[#86efac]" />
+                  <span className="text-[11px] font-mono uppercase tracking-widest">{language}</span>
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-foreground/10 p-2">
+                <DropdownMenuItem onClick={() => { setLanguage('en'); setGoogleTranslate('en'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                  ENGLISH <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">EN</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setLanguage('hi'); setGoogleTranslate('hi'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                  हिन्दी <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">HINDI</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setLanguage('mr'); setGoogleTranslate('mr'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                  मराठी <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">MARATHI</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setLanguage('bn'); setGoogleTranslate('bn'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                  বাংলা <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">BENGALI</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <a href="#" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
-              Sign in
+              {t.nav.signIn}
             </a>
             <Link href="/auth">
               <Button
                 size="sm"
                 className={`rounded-full transition-all duration-500 font-bold ${isScrolled ? "bg-black hover:bg-black/90 text-[#86efac] px-4 h-8 text-xs" : "bg-[#86efac] hover:bg-[#86efac]/90 text-black px-6"}`}
               >
-                Launch App
+                {t.nav.launchApp}
               </Button>
             </Link>
           </div>
@@ -142,14 +185,14 @@ export function Navigation() {
                 className="flex-1 rounded-full h-14 text-base"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Sign in
+                {t.nav.signIn}
               </Button>
               <Link href="/auth" className="flex-1">
                 <Button 
                   className="w-full bg-[#86efac] text-black rounded-full h-14 text-base font-bold shadow-[0_0_20px_rgba(134,239,172,0.2)]"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Launch App
+                  {t.nav.launchApp}
                 </Button>
               </Link>
             </div>

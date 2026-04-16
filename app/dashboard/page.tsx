@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -149,7 +150,10 @@ function GrowthChart() {
 /*  MAIN PAGE                                                          */
 /* ------------------------------------------------------------------ */
 
+
+
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
@@ -184,7 +188,7 @@ export default function DashboardPage() {
         {/* Logo */}
         <Link href="/" className="mb-6 group">
           <div className="w-10 h-10 border border-[#86efac]/30 bg-[#86efac]/10 flex items-center justify-center group-hover:bg-[#86efac]/20 transition-colors">
-            <span className="font-display text-[#86efac] text-lg">M</span>
+            <img src="/logo.png" alt="METIS Logo" className="w-6 h-6 object-contain" />
           </div>
         </Link>
 
@@ -228,7 +232,7 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-lg font-display">Dashboard</h1>
                 <p className="text-[11px] text-muted-foreground font-mono -mt-0.5">
-                  Welcome back, {userName.split(' ')[0]}
+                  {t.dashboard.welcome}, {userName.split(' ')[0]}
                 </p>
               </div>
             </div>
@@ -458,7 +462,7 @@ export default function DashboardPage() {
                 {/* --- Consultations --- */}
                 <div className="border border-foreground/10 bg-foreground/[0.02] p-8">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-display text-base">Consultations</h3>
+                    <h3 className="font-display text-base">{t.dashboard.consultations}</h3>
                     <button className="text-[10px] font-mono text-[#86efac] uppercase tracking-widest hover:underline">
                       See all
                     </button>
@@ -496,7 +500,7 @@ export default function DashboardPage() {
                 <div className="border border-[#86efac]/20 bg-[#86efac]/5 p-8">
                   <div className="flex items-center gap-2 mb-3">
                     <Lightbulb className="w-4 h-4 text-[#86efac]" />
-                    <h3 className="text-sm font-display text-[#86efac]">Health Tip</h3>
+                    <h3 className="text-sm font-display text-[#86efac]">{t.dashboard.healthTip}</h3>
                   </div>
                   <p className="text-sm text-foreground/80 leading-relaxed italic">
                     &ldquo;Consistent tummy time helps Leo develop strong neck and shoulder
@@ -507,7 +511,7 @@ export default function DashboardPage() {
                 {/* --- Risk Score --- */}
                 <div className="border border-foreground/10 bg-foreground/[0.02] p-8">
                   <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                    Malnutrition Risk Score
+                    {t.dashboard.riskScore}
                   </span>
                   <div className="mt-4 flex items-end gap-4">
                     <span className="text-5xl font-display text-[#86efac]">12</span>
@@ -520,7 +524,7 @@ export default function DashboardPage() {
                     />
                   </div>
                   <div className="flex justify-between mt-2">
-                    <span className="text-[9px] font-mono text-[#86efac]">LOW RISK</span>
+                    <span className="text-[9px] font-mono text-[#86efac]">{t.dashboard.lowRisk}</span>
                     <span className="text-[9px] font-mono text-muted-foreground">
                       Updated 2h ago
                     </span>

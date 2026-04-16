@@ -204,3 +204,34 @@
     100% { background-position: 0% 50%; }
   }
 }
+
+/* 
+ * Agressive Google Translate Hiding 
+ * This ensures the automation works without the ugly UI
+ */
+.goog-te-banner-frame,
+.goog-te-gadget-icon,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-menu-value,
+.goog-te-spinner-pos,
+.skiptranslate iframe,
+#google_translate_element {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Prevent layout shift during translation */
+.skiptranslate {
+  display: none !important;
+}
+
+

@@ -3,6 +3,30 @@ import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { LanguageProvider } from "@/lib/i18n-context"
+
+const GoogleTranslateScript = () => (
+  <>
+    <script 
+      type="text/javascript" 
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+      async
+    />
+    <script 
+      dangerouslySetInnerHTML={{
+        __html: `
+          function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'hi,mr,bn',
+              autoDisplay: false
+            }, 'google_translate_element');
+          }
+        `
+      }}
+    />
+  </>
+);
 
 const instrumentSans = Instrument_Sans({ 
   subsets: ["latin"],
@@ -33,8 +57,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <GoogleTranslateScript />
+      </head>
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>

@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 
 const footerLinks = {
   Product: [
@@ -91,7 +92,10 @@ function AnimatedWaveCanvas() {
   return <canvas ref={canvasRef} className="w-full h-full" />;
 }
 
+
+
 export function FooterSection() {
+  const { t } = useLanguage();
   return (
     <footer className="relative bg-black">
       {/* Panoramic banner image */}
@@ -115,12 +119,11 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display text-white">METIS</span>
-                <span className="text-xs text-white/40 font-mono">Health</span>
+                <img src="/logo.png" alt="METIS Logo" className="h-10" />
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                AI-powered nutrition and health monitoring for all ages. Early detection, personalized guidance, and global clinical impact tracking.
+                {t.footer.description}
               </p>
 
               {/* Social Links */}
@@ -167,7 +170,7 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/30">
-            &copy; 2026 METIS by Team BuildShot. All rights reserved.
+            &copy; 2026 {t.footer.rights}
           </p>
 
           <div className="flex items-center gap-4 text-sm text-white/30">

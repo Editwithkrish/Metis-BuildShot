@@ -35,9 +35,7 @@ export default function AuthPage() {
         {/* Logo/Branding */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
-            <span className="text-3xl font-display text-white transition-colors group-hover:text-[#86efac]">METIS</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#86efac]" />
-            <span className="text-xs font-mono text-white/40 uppercase tracking-widest mt-1">Security</span>
+            <img src="/logo.png" alt="METIS Logo" className="h-12" />
           </Link>
           <h1 className="text-2xl font-display text-white mt-4">
             {isLogin ? "Welcome back to clinical monitoring" : "Create your clinical workspace"}
