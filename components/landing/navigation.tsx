@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Globe, ChevronDown } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
 import { setGoogleTranslate } from "@/lib/translate-util";
@@ -15,6 +15,8 @@ import {
 
 export function Navigation() {
   const { t, language, setLanguage } = useLanguage();
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [canInstall, setCanInstall] = useState(false);
   
   const navLinks = [
     { name: t.nav.features,      href: "#features"      },
@@ -26,6 +28,29 @@ export function Navigation() {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setCanInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setCanInstall(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,6 +105,18 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-6">
+            {canInstall && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleInstallClick}
+                className={`flex items-center gap-2 h-9 px-4 rounded-full border border-[#86efac]/30 bg-[#86efac]/5 text-[#86efac] transition-all hover:bg-[#86efac]/10 animate-pulse`}
+              >
+                <Smartphone className="w-4 h-4" />
+                <span className="text-[10px] font-mono font-bold tracking-widest">INSTALL</span>
+              </Button>
+            )}
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -176,6 +213,16 @@ export function Navigation() {
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
+            {canInstall && (
+              <Button
+                onClick={handleInstallClick}
+                className="w-full mb-4 bg-white/5 border border-[#86efac]/20 text-[#86efac] rounded-full h-14 text-base font-bold flex items-center justify-center gap-3 animate-pulse"
+              >
+                <Smartphone className="w-5 h-5" />
+                INSTALL APP
+              </Button>
+            )}
+
             <p className="text-xs text-muted-foreground mb-4 font-mono text-center">
               Free for community health workers & public NGOs
             </p>
