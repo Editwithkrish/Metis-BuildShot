@@ -65,7 +65,7 @@ export default function OnBoardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background noise-overlay flex flex-col items-center justify-center p-6 lg:p-12 overflow-hidden">
+    <main className="min-h-screen bg-background noise-overlay flex flex-col items-center justify-center p-4 lg:p-12 overflow-x-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#86efac]/20 to-transparent" />
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-[#86efac]/5 rounded-full blur-[100px] pointer-events-none" />
@@ -73,19 +73,19 @@ export default function OnBoardingPage() {
 
       <div className="w-full max-w-4xl relative z-10">
         {/* Header */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="mb-6 lg:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3 lg:mb-4">
               <span className="w-8 h-px bg-[#86efac]/30" />
-              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Initialization Phase</span>
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Initialization Phase</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-display text-white flex items-center gap-3">
-              {t.onboarding.welcome} <img src="/logo.png" alt="METIS Logo" className="h-10 lg:h-12" />
+            <h1 className="text-3xl lg:text-5xl font-display text-white flex items-center gap-2 lg:gap-3">
+              {t.onboarding.welcome} <img src="/logo.png" alt="METIS Logo" className="h-8 lg:h-12" />
             </h1>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">System Readiness</span>
-            <Progress value={progress} className="w-48 h-1 bg-foreground/10" />
+          <div className="flex flex-col items-start md:items-end gap-2">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">System Readiness</span>
+            <Progress value={progress} className="w-full md:w-48 h-1 bg-foreground/10" />
           </div>
         </div>
 
@@ -98,8 +98,8 @@ export default function OnBoardingPage() {
           <Card className="bg-card border-foreground/10 overflow-hidden relative group backdrop-blur-sm">
             <div className="grid lg:grid-cols-12">
               {/* Left Side: Step Indicator */}
-              <div className="lg:col-span-4 bg-foreground/[0.02] border-r border-foreground/10 p-8 lg:p-10">
-                <div className="flex flex-col gap-6">
+              <div className="lg:col-span-3 bg-foreground/[0.02] border-b lg:border-b-0 lg:border-r border-foreground/10 p-4 lg:p-10">
+                <div className="flex lg:flex-col gap-3 lg:gap-6 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-2 lg:pb-0">
                   {steps.map((step) => (
                     <div 
                       key={step.id} 
@@ -107,23 +107,23 @@ export default function OnBoardingPage() {
                         currentStep >= step.id ? "opacity-100" : "opacity-30"
                       }`}
                     >
-                      <div className={`w-7 h-7 rounded-full border flex items-center justify-center font-mono text-[10px] shrink-0 ${
-                        currentStep === step.id ? "border-[#86efac] text-[#86efac] bg-[#86efac]/10" : 
-                        currentStep > step.id ? "border-[#86efac] bg-[#86efac] text-black" : "border-foreground/20 text-muted-foreground"
-                      }`}>
-                        {currentStep > step.id ? <CheckCircle2 className="w-3 h-3" /> : step.id}
+                        <div className={`w-6 h-6 lg:w-7 lg:h-7 rounded-full border flex items-center justify-center font-mono text-[9px] lg:text-[10px] shrink-0 ${
+                          currentStep === step.id ? "border-[#86efac] text-[#86efac] bg-[#86efac]/10" : 
+                          currentStep > step.id ? "border-[#86efac] bg-[#86efac] text-black" : "border-foreground/20 text-muted-foreground"
+                        }`}>
+                          {currentStep > step.id ? <CheckCircle2 className="w-3 h-3" /> : step.id}
+                        </div>
+                        <div className="hidden lg:block min-w-0">
+                          <p className="text-xs font-medium text-white truncate">{step.title}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{step.description}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-white truncate">{step.title}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{step.description}</p>
-                      </div>
-                    </div>
                   ))}
                 </div>
               </div>
 
               {/* Right Side: Content */}
-              <div className="lg:col-span-8 p-8 lg:p-12 min-h-[480px] flex flex-col">
+              <div className="lg:col-span-9 p-5 lg:p-12 min-h-[400px] flex flex-col">
                 {currentStep === 1 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Who are you representing?</h2>
@@ -139,15 +139,15 @@ export default function OnBoardingPage() {
                         <button
                           key={role.id}
                           onClick={() => setSelectedRole(role.id)}
-                          className={`p-5 border text-left transition-all group ${
+                          className={`p-4 lg:p-5 border text-left transition-all group ${
                             selectedRole === role.id 
                               ? "border-[#86efac] bg-[#86efac]/5" 
                               : "border-foreground/10 hover:border-[#86efac]/30 hover:bg-foreground/[0.02]"
                           }`}
                         >
-                          <role.icon className={`w-5 h-5 mb-3 transition-colors ${selectedRole === role.id ? "text-[#86efac]" : "text-muted-foreground"}`} />
-                          <p className="font-medium text-white text-sm">{role.label}</p>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">{role.sub}</p>
+                          <role.icon className={`w-4 h-4 lg:w-5 lg:h-5 mb-2 lg:mb-3 transition-colors ${selectedRole === role.id ? "text-[#86efac]" : "text-muted-foreground"}`} />
+                          <p className="font-medium text-white text-[13px] lg:text-sm">{role.label}</p>
+                          <p className="text-[9px] lg:text-[10px] text-muted-foreground mt-0.5">{role.sub}</p>
                         </button>
                       ))}
                     </div>
@@ -402,30 +402,32 @@ export default function OnBoardingPage() {
                 )}
 
                 {/* Footer Controls */}
-                <div className="mt-auto pt-10 flex justify-between items-center border-t border-foreground/10">
-                  <span className="text-xs font-mono text-muted-foreground tracking-tighter overflow-hidden whitespace-nowrap opacity-50">
+                <div className="mt-auto pt-6 lg:pt-10 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-foreground/10">
+                  <span className="text-[10px] font-mono text-muted-foreground tracking-tighter overflow-hidden whitespace-nowrap opacity-50 order-2 sm:order-1">
                     ID: {selectedRole || "NULL"} // LANG: {formData.language.substring(0,3).toUpperCase()} // STEP: 0{currentStep}
                   </span>
-                  {currentStep < 6 ? (
-                    <Button 
-                      onClick={nextStep}
-                      disabled={
-                        (currentStep === 1 && !selectedRole) || 
-                        (currentStep === 3 && !formData.name) ||
-                        (currentStep === 5 && !selectedGoal)
-                      }
-                      className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95"
-                    >
-                      {t.onboarding.continue}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  ) : (
-                    <Link href="/dashboard">
-                      <Button className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95">
-                        {t.onboarding.launchDashboard}
+                  <div className="w-full sm:w-auto order-1 sm:order-2">
+                    {currentStep < 6 ? (
+                      <Button 
+                        onClick={nextStep}
+                        disabled={
+                          (currentStep === 1 && !selectedRole) || 
+                          (currentStep === 3 && !formData.name) ||
+                          (currentStep === 5 && !selectedGoal)
+                        }
+                        className="w-full sm:w-auto bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95 h-12 lg:h-14"
+                      >
+                        {t.onboarding.continue}
+                        <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
-                    </Link>
-                  )}
+                    ) : (
+                      <Link href="/dashboard" className="w-full sm:w-auto block">
+                        <Button className="w-full sm:w-auto bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95 h-12 lg:h-14">
+                          {t.onboarding.launchDashboard}
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -436,14 +438,15 @@ export default function OnBoardingPage() {
         .noise-overlay {
           position: relative;
         }
-        .noise-overlay::after {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-          opacity: 0.03;
-          pointer-events: none;
           z-index: 100;
+          pointer-events: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </main>
