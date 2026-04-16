@@ -169,20 +169,28 @@ export default function NutritionPage() {
   };
 
   const calculateTargetIntake = () => {
-    if (!userData) return 2200; // Default fallback
+    if (!userData || !userData.dob) return 2200; // Default fallback
 
     const weight = parseFloat(userData.weight || "70");
     const height = parseFloat(userData.height || "170");
-    const ageStr = userData.age?.toLowerCase() || "";
     
-    // INFANT CALCULATION (Weight-based)
-    if (userData.role === 'mother' || ageStr.includes('m')) {
+    // Calculate Age from DOB
+    const birthDate = new Date(userData.dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+    // Months for pediatric logic
+    const diffMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
+    
+    // INFANT CALCULATION (Weight-based under 2 years)
+    if (userData.role === 'mother' && diffMonths < 24) {
         // Average ~90-100 kcal per kg for infants
         return Math.round(weight * 95);
     }
 
     // ADULT CALCULATION (Mifflin-St Jeor)
-    const age = parseInt(ageStr) || 25;
     let bmr = (10 * weight) + (6.25 * height) - (5 * age);
     
     if (userData.gender === 'Male') bmr += 5;

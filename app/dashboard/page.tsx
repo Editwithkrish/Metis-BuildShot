@@ -297,7 +297,7 @@ export default function DashboardPage() {
             {[
               { icon: AudioLines, label: "Cry Decoder", href: "/dashboard/cry-decoder", accent: true },
               { icon: Utensils, label: "Log Feeding", href: "/dashboard/nutrition", accent: false },
-              { icon: Syringe, label: "Vaccines", href: "#", accent: false },
+              { icon: Syringe, label: "Vaccines", href: "/dashboard/vaccinations", accent: false },
               { icon: Stethoscope, label: "Consult", href: "#", accent: false },
             ].map((action) => (
               <Link

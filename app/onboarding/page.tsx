@@ -36,7 +36,7 @@ export default function OnBoardingPage() {
     dataSource: "Manual",
     weight: "",
     height: "",
-    age: "",
+    dob: "",
     feedingStatus: "Exclusive",
     clinicalLoad: "Standard",
     isPregnant: false,
@@ -64,7 +64,7 @@ export default function OnBoardingPage() {
           data_source: formData.dataSource,
           weight: formData.weight,
           height: formData.height,
-          age: formData.age,
+          dob: formData.dob || null,
           feeding_status: formData.feedingStatus,
           clinical_load: formData.clinicalLoad,
           goal: selectedGoal,
@@ -240,15 +240,16 @@ export default function OnBoardingPage() {
                       </div>
 
                       {(selectedRole === 'mother' || selectedRole === 'ind' || selectedRole === 'caregiver') ? (
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Age {selectedRole === 'mother' ? '(Baby)' : ''}</label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2 col-span-2">
+                            <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                                Date of Birth {selectedRole === 'mother' ? '(Baby)' : ''}
+                            </label>
                             <input 
-                              type="text" 
-                              placeholder="e.g. 6m / 28y"
-                              value={formData.age}
-                              onChange={(e) => setFormData({...formData, age: e.target.value})}
-                              className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                              type="date" 
+                              value={formData.dob}
+                              onChange={(e) => setFormData({...formData, dob: e.target.value})}
+                              className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs appearance-none [color-scheme:dark]"
                             />
                           </div>
                           <div className="space-y-2">

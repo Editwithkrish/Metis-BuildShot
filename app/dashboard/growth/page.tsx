@@ -105,9 +105,18 @@ export default function GrowthPage() {
       if (onboardingData) {
         const parsed = JSON.parse(onboardingData);
         setUserData(parsed);
-        const ageStr = parsed.age?.toLowerCase() || "";
-        if (ageStr.includes('y') && parseInt(ageStr) >= 18) setIsAdult(true);
-        else if (parsed.role === 'ind' && !ageStr.includes('m')) setIsAdult(true);
+        
+        if (parsed.dob) {
+            const birthDate = new Date(parsed.dob);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+            
+            if (age >= 18) setIsAdult(true);
+        } else if (parsed.role === 'ind') {
+            setIsAdult(true);
+        }
       }
 
       const { data, error } = await supabase
