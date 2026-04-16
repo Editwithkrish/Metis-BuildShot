@@ -39,6 +39,8 @@ export default function OnBoardingPage() {
     age: "",
     feedingStatus: "Exclusive",
     clinicalLoad: "Standard",
+    isPregnant: false,
+    gender: "",
   });
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,6 +68,8 @@ export default function OnBoardingPage() {
           feeding_status: formData.feedingStatus,
           clinical_load: formData.clinicalLoad,
           goal: selectedGoal,
+          is_pregnant: formData.isPregnant,
+          gender: formData.gender,
           onboarding_completed: true,
           updated_at: new Date().toISOString(),
         })
@@ -280,8 +284,55 @@ export default function OnBoardingPage() {
                           />
                         </div>
                       )}
-
+                      
                       {selectedRole === 'mother' && (
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Current Status</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {[
+                              { id: true, label: 'Pregnant' },
+                              { id: false, label: 'Post-natal / Baby' }
+                            ].map(status => (
+                              <button
+                                key={status.label}
+                                onClick={() => setFormData({...formData, isPregnant: status.id})}
+                                className={`py-2 text-[10px] border font-mono transition-all ${
+                                  formData.isPregnant === status.id 
+                                    ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
+                                    : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
+                                }`}
+                              >
+                                {status.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {((selectedRole === 'mother' && !formData.isPregnant) || selectedRole === 'ind') && (
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                            {selectedRole === 'mother' ? "Baby's Gender" : "Gender"}
+                          </label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {['Male', 'Female'].map(g => (
+                              <button
+                                key={g}
+                                onClick={() => setFormData({...formData, gender: g})}
+                                className={`py-2 text-[10px] border font-mono transition-all ${
+                                  formData.gender === g 
+                                    ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
+                                    : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
+                                }`}
+                              >
+                                {g}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedRole === 'mother' && !formData.isPregnant && (
                         <div className="space-y-3">
                           <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Breastfeeding Status</label>
                           <div className="grid grid-cols-3 gap-2">
@@ -457,7 +508,11 @@ export default function OnBoardingPage() {
                         onClick={nextStep}
                         disabled={
                           (currentStep === 1 && !selectedRole) || 
-                          (currentStep === 3 && !formData.name) ||
+                          (currentStep === 3 && (
+                            !formData.name || 
+                            (selectedRole === 'ind' && !formData.gender) ||
+                            (selectedRole === 'mother' && !formData.isPregnant && !formData.gender)
+                          )) ||
                           (currentStep === 5 && !selectedGoal)
                         }
                         className="w-full sm:w-auto bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95 h-12 lg:h-14"
