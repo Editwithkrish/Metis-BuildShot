@@ -296,7 +296,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
               { icon: AudioLines, label: "Cry Decoder", href: "/dashboard/cry-decoder", accent: true },
-              { icon: Utensils, label: "Log Feeding", href: "#", accent: false },
+              { icon: Utensils, label: "Log Feeding", href: "/dashboard/nutrition", accent: false },
               { icon: Syringe, label: "Vaccines", href: "#", accent: false },
               { icon: Stethoscope, label: "Consult", href: "#", accent: false },
             ].map((action) => (
