@@ -171,9 +171,9 @@ export default function DashboardPage() {
                   Leo&apos;s weight progress over 8 months
                 </p>
               </div>
-              <span className="px-3 py-1 border border-[#86efac]/30 text-[10px] font-mono text-[#86efac] uppercase tracking-widest">
-                Normal Range
-              </span>
+              <Link href="/dashboard/growth" className="px-3 py-1 border border-[#86efac]/30 text-[10px] font-mono text-[#86efac] uppercase tracking-widest hover:bg-[#86efac]/10 transition-all">
+                View Analysis
+              </Link>
             </div>
             <div className="h-[220px]">
               <GrowthChart />
