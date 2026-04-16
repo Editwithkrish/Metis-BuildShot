@@ -17,6 +17,13 @@ import {
 export function Navigation() {
   const { t, language, setLanguage } = useLanguage();
   const { canInstall, installApp } = usePWA();
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    // Detect iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(isIOSDevice);
+  }, []);
   
   const navLinks = [
     { name: t.nav.features,      href: "#features"      },
@@ -199,6 +206,40 @@ export function Navigation() {
                 INSTALL APP
               </Button>
             )}
+
+            {!canInstall && isIOS && !(window.navigator as any).standalone && (
+              <div className="mb-6 p-4 rounded-2xl bg-[#86efac]/5 border border-[#86efac]/20 text-center">
+                <p className="text-[#86efac] text-xs font-mono mb-2 uppercase tracking-widest">To Install on iOS</p>
+                <p className="text-foreground/70 text-[11px]">
+                  Tap the <span className="font-bold">Share</span> icon (square with arrow) and select <span className="font-bold">"Add to Home Screen"</span>
+                </p>
+              </div>
+            )}
+
+            {/* Mobile Language Switcher */}
+            <div className="mb-6">
+              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] mb-3 ml-2">Select Language</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { code: 'en', label: 'English' },
+                  { code: 'hi', label: 'हिन्दी' },
+                  { code: 'mr', label: 'मराठी' },
+                  { code: 'bn', label: 'বাংলা' }
+                ].map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => { setLanguage(lang.code as any); setGoogleTranslate(lang.code); }}
+                    className={`h-12 rounded-xl text-xs font-mono transition-all border ${
+                      language === lang.code 
+                        ? "bg-[#86efac] border-[#86efac] text-black font-bold" 
+                        : "bg-white/5 border-white/10 text-foreground/70"
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <p className="text-xs text-muted-foreground mb-4 font-mono text-center">
               Free for community health workers & public NGOs
