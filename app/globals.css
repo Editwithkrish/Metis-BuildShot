@@ -91,6 +91,9 @@
   html {
     scroll-behavior: smooth;
   }
+  button, [role="button"], a, input[type="submit"], input[type="button"] {
+    cursor: pointer !important;
+  }
 }
 
 @layer utilities {
