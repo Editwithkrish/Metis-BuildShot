@@ -26,7 +26,7 @@ const sidebarItems = [
   { icon: Utensils, label: "Nutrition", href: "/dashboard/nutrition" },
   { icon: Activity, label: "Activity", href: "/dashboard/activity" },
   { icon: Stethoscope, label: "Consult", href: "/dashboard/consult" },
-  { icon: Syringe, label: "Vaccines", href: "/dashboard/vaccines" },
+  { icon: Syringe, label: "Vaccines", href: "/dashboard/vaccinations" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
 
