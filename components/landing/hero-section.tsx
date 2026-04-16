@@ -3,6 +3,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
+import { usePWA } from "@/lib/use-pwa";
+import { Smartphone } from "lucide-react";
 
 
 
@@ -110,6 +112,7 @@ function BlurWord({ word, trigger }: { word: string; trigger: number }) {
 
 export function HeroSection() {
   const { t } = useLanguage();
+  const { canInstall, installApp } = usePWA();
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
 
@@ -216,6 +219,16 @@ export function HeroSection() {
           <button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white font-medium rounded-full border border-white/10 transition-all backdrop-blur-md">
             {t.hero.ctaSecondary}
           </button>
+          
+          {canInstall && (
+            <button 
+              onClick={installApp}
+              className="h-14 px-10 bg-[#86efac]/10 hover:bg-[#86efac]/20 text-[#86efac] font-bold rounded-full border border-[#86efac]/30 transition-all flex items-center gap-3 animate-pulse"
+            >
+              <Smartphone className="w-5 h-5" />
+              Install App
+            </button>
+          )}
         </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Menu, X, Globe, ChevronDown, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
 import { setGoogleTranslate } from "@/lib/translate-util";
+import { usePWA } from "@/lib/use-pwa";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +16,7 @@ import {
 
 export function Navigation() {
   const { t, language, setLanguage } = useLanguage();
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [canInstall, setCanInstall] = useState(false);
+  const { canInstall, installApp } = usePWA();
   
   const navLinks = [
     { name: t.nav.features,      href: "#features"      },
@@ -28,29 +28,6 @@ export function Navigation() {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setCanInstall(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setCanInstall(false);
-    }
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -109,7 +86,7 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleInstallClick}
+                onClick={installApp}
                 className={`flex items-center gap-2 h-9 px-4 rounded-full border border-[#86efac]/30 bg-[#86efac]/5 text-[#86efac] transition-all hover:bg-[#86efac]/10 animate-pulse`}
               >
                 <Smartphone className="w-4 h-4" />
@@ -215,7 +192,7 @@ export function Navigation() {
           >
             {canInstall && (
               <Button
-                onClick={handleInstallClick}
+                onClick={installApp}
                 className="w-full mb-4 bg-white/5 border border-[#86efac]/20 text-[#86efac] rounded-full h-14 text-base font-bold flex items-center justify-center gap-3 animate-pulse"
               >
                 <Smartphone className="w-5 h-5" />
