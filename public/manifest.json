@@ -1,0 +1,22 @@
+{
+  "name": "METIS",
+  "short_name": "METIS",
+  "description": "Motherhood & Newborn Care Intelligence Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060606",
+  "theme_color": "#86efac",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
