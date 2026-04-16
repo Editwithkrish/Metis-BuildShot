@@ -8,19 +8,67 @@ import { Label } from "@/components/ui/label";
 import { Github, Mail, Chrome, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate auth delay
-    setTimeout(() => {
-      router.push("/onboarding");
-    }, 1500);
+    
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const password = formData.get("pass") as string;
+    
+    const supabase = createClient();
+    
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        router.push("/dashboard");
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: email.split('@')[0], // Default name
+            }
+          }
+        });
+        if (error) throw error;
+        router.push("/onboarding");
+      }
+    } catch (error: any) {
+      console.error("Auth error:", error.message);
+      toast.error(error.message || "Authentication failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      console.error("Google Auth error:", error.message);
+      toast.error(error.message || "Google authentication failed");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,6 +105,7 @@ export default function AuthPage() {
                 <Label htmlFor="email" className="text-xs font-mono text-muted-foreground ml-1">EMAIL ADDRESS</Label>
                 <Input 
                   id="email" 
+                  name="email"
                   type="email" 
                   placeholder="you@email.com" 
                   required 
@@ -68,6 +117,7 @@ export default function AuthPage() {
                 <Label htmlFor="pass" className="text-xs font-mono text-muted-foreground ml-1">PASSWORD</Label>
                 <Input 
                   id="pass" 
+                  name="pass"
                   type="password" 
                   placeholder="••••••••" 
                   required 
@@ -104,7 +154,13 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full h-12 border-white/10 rounded-none hover:bg-white/5" disabled={isLoading}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full h-12 border-white/10 rounded-none hover:bg-white/5" 
+              disabled={isLoading}
+              onClick={handleGoogleAuth}
+            >
               <Chrome className="w-4 h-4 mr-2" />
               Sign in with Google
             </Button>

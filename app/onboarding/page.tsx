@@ -7,6 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Activity, ArrowRight, CheckCircle2, Globe, Heart, Shield, User, Users, Microscope, Baby, HeartPulse } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const steps = [
   { id: 1, title: "Identity", description: "Tell us who you are" },
@@ -37,6 +40,48 @@ export default function OnBoardingPage() {
     feedingStatus: "Exclusive",
     clinicalLoad: "Standard",
   });
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const completeOnboarding = async () => {
+    setIsSubmitting(true);
+    const supabase = createClient();
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: formData.name,
+          role: selectedRole,
+          detail: formData.detail,
+          language: formData.language,
+          alert_type: formData.alertType,
+          data_source: formData.dataSource,
+          weight: formData.weight,
+          height: formData.height,
+          age: formData.age,
+          feeding_status: formData.feedingStatus,
+          clinical_load: formData.clinicalLoad,
+          goal: selectedGoal,
+          onboarding_completed: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      toast.success("Profile completed!");
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error("Onboarding saving error:", error.message);
+      toast.error("Failed to save profile. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     setIsVisible(true);
@@ -421,11 +466,13 @@ export default function OnBoardingPage() {
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     ) : (
-                      <Link href="/dashboard" className="w-full sm:w-auto block">
-                        <Button className="w-full sm:w-auto bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95 h-12 lg:h-14">
-                          {t.onboarding.launchDashboard}
-                        </Button>
-                      </Link>
+                      <Button 
+                        onClick={completeOnboarding}
+                        disabled={isSubmitting}
+                        className="w-full sm:w-auto bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-8 rounded-full shadow-[0_0_20px_rgba(134,239,172,0.2)] transition-all active:scale-95 h-12 lg:h-14"
+                      >
+                        {isSubmitting ? "Saving..." : t.onboarding.launchDashboard}
+                      </Button>
                     )}
                   </div>
                 </div>
