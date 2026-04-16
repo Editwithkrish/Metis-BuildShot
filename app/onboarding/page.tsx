@@ -254,7 +254,9 @@ export default function OnBoardingPage() {
                           <div className="space-y-2">
                             <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Weight (kg)</label>
                             <input 
-                              type="text" 
+                              type="number" 
+                              step="0.1"
+                              min="0.1"
                               placeholder="7.5"
                               value={formData.weight}
                               onChange={(e) => setFormData({...formData, weight: e.target.value})}
@@ -264,7 +266,9 @@ export default function OnBoardingPage() {
                           <div className="space-y-2">
                             <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Height (cm)</label>
                             <input 
-                              type="text" 
+                              type="number" 
+                              step="0.5"
+                              min="1"
                               placeholder="65"
                               value={formData.height}
                               onChange={(e) => setFormData({...formData, height: e.target.value})}
