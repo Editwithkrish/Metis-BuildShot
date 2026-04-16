@@ -133,16 +133,40 @@ export default function GrowthPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Authentication required");
 
+      const weightValue = parseFloat(newWeight);
+      const heightValue = newHeight ? parseFloat(newHeight) : null;
+
       const { error } = await supabase
         .from('growth_logs')
         .insert([{
           profile_id: user.id,
-          weight: parseFloat(newWeight),
-          height: newHeight ? parseFloat(newHeight) : null,
+          weight: weightValue,
+          height: heightValue,
           logged_at: new Date().toISOString().split('T')[0]
         }]);
 
       if (error) throw error;
+
+      // Update master profile
+      await supabase
+        .from('profiles')
+        .update({
+          weight: weightValue,
+          ...(heightValue && { height: heightValue }),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      // Update local storage cache
+      const localData = localStorage.getItem("metis_onboarding_data");
+      if (localData) {
+        const parsed = JSON.parse(localData);
+        localStorage.setItem("metis_onboarding_data", JSON.stringify({
+            ...parsed,
+            weight: weightValue.toString(),
+            ...(heightValue && { height: heightValue.toString() })
+        }));
+      }
       
       toast.success("Biometric data synced.");
       setNewWeight("");
