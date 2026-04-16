@@ -9,12 +9,12 @@ import { Activity, ArrowRight, CheckCircle2, Globe, Heart, Shield, User, Users, 
 import Link from "next/link";
 
 const steps = [
-  { id: 1, title: "Identity", description: "Define your role within the ecosystem" },
-  { id: 2, title: "Context", description: "Provide localized clinical environment" },
-  { id: 3, title: "Biometrics", description: "Clinical health baseline data" },
-  { id: 4, title: "Preferences", description: "Communication & sync protocols" },
-  { id: 5, title: "Priorities", description: "Select primary health monitoring goals" },
-  { id: 6, title: "Finalize", description: "Synchronizing with METIS cloud" },
+  { id: 1, title: "Identity", description: "Tell us who you are" },
+  { id: 2, title: "Region", description: "Set your location" },
+  { id: 3, title: "Health Details", description: "Basic health information" },
+  { id: 4, title: "Preferences", description: "How we'll stay in touch" },
+  { id: 5, title: "Goals", description: "What are your health priorities?" },
+  { id: 6, title: "Complete", description: "Finalizing your profile" },
 ];
 
 
@@ -77,14 +77,14 @@ export default function OnBoardingPage() {
           <div>
             <div className="flex items-center gap-2 mb-3 lg:mb-4">
               <span className="w-8 h-px bg-[#86efac]/30" />
-              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Initialization Phase</span>
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Getting Started</span>
             </div>
             <h1 className="text-3xl lg:text-5xl font-display text-white flex items-center gap-2 lg:gap-3">
               {t.onboarding.welcome} <img src="/logo.png" alt="METIS Logo" className="h-8 lg:h-12" />
             </h1>
           </div>
           <div className="flex flex-col items-start md:items-end gap-2">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">System Readiness</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Setup Progress</span>
             <Progress value={progress} className="w-full md:w-48 h-1 bg-foreground/10" />
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function OnBoardingPage() {
 
                 {currentStep === 2 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-2xl font-display text-white mb-8">Localized Precision</h2>
+                    <h2 className="text-2xl font-display text-white mb-8">Your Region</h2>
                     <p className="text-muted-foreground mb-8 text-sm">Select your primary geographical region to load relevant nutritional metadata and government scheme datasets.</p>
                     <div className="space-y-4">
                       <div className="p-6 border border-[#86efac] bg-[#86efac]/5 flex items-center justify-between">
@@ -176,14 +176,14 @@ export default function OnBoardingPage() {
 
                 {currentStep === 3 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-2xl font-display text-white mb-8">Biometric Calibration</h2>
+                    <h2 className="text-2xl font-display text-white mb-8">Health Details</h2>
                     
                     <div className="space-y-5">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Identifier / Full Name</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Full Name</label>
                         <input 
                           type="text" 
-                          placeholder="Search identifier..."
+                          placeholder="Enter your name..."
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
                           className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
@@ -259,7 +259,7 @@ export default function OnBoardingPage() {
 
                       {(selectedRole === 'doc' || selectedRole === 'hworker') && (
                         <div className="space-y-3">
-                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Daily Clinical Load</label>
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Daily Patient Load</label>
                           <div className="grid grid-cols-3 gap-2">
                             {['Standard', 'High', 'Critical'].map(load => (
                               <button
@@ -281,7 +281,7 @@ export default function OnBoardingPage() {
                       <div className="pt-2 border-t border-foreground/5">
                         <div className="flex items-center gap-3 text-[10px] text-[#86efac]/60 font-mono">
                           <div className="w-1.5 h-1.5 rounded-full bg-[#86efac] animate-pulse" />
-                          <span>CNN BASAL METRIC SYNC ACTIVE</span>
+                          <span>Secure Health Sync Active</span>
                         </div>
                       </div>
                     </div>
@@ -290,12 +290,12 @@ export default function OnBoardingPage() {
 
                 {currentStep === 4 && (
                   <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <h2 className="text-2xl font-display text-white mb-8">System Preferences</h2>
+                    <h2 className="text-2xl font-display text-white mb-8">Your Preferences</h2>
                     
                     <div className="space-y-6">
                       {/* Language selection */}
                       <div className="space-y-3">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Protocol Language</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Select Language</label>
                         <div className="flex flex-wrap gap-2">
                           {['English', 'Hindi', 'Marathi', 'Bengali'].map(lang => (
                             <button
@@ -315,7 +315,7 @@ export default function OnBoardingPage() {
 
                       {/* Alert type */}
                       <div className="space-y-3">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Alert Criticality Path</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Notification Method</label>
                         <div className="grid grid-cols-3 gap-3">
                           {[
                             { id: 'In-App', label: 'Standard', sub: 'In-App Only' },
@@ -340,7 +340,7 @@ export default function OnBoardingPage() {
 
                       {/* Data Source */}
                       <div className="space-y-3">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Primary Data Ingest</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Data Entry Method</label>
                         <select 
                           value={formData.dataSource}
                           onChange={(e) => setFormData({...formData, dataSource: e.target.value})}
@@ -394,17 +394,17 @@ export default function OnBoardingPage() {
                       <div className="absolute inset-0 rounded-full border border-[#86efac] animate-ping opacity-20" />
                       <CheckCircle2 className="w-10 h-10 text-[#86efac]" />
                     </div>
-                    <h2 className="text-3xl font-display text-white mb-4">Configuration Complete</h2>
-                    <p className="text-[#86efac] font-mono text-sm mb-2 opacity-80">ACCESS_GRANTED: {formData.name || 'USER_ID_NULL'}</p>
-                    <p className="text-muted-foreground max-w-sm mb-2">Welcome to the ecosystem.</p>
-                    <p className="text-muted-foreground max-w-sm mb-8 text-sm px-6">Your clinical profile, preference protocols, and localized datasets have been synchronized.</p>
+                    <h2 className="text-3xl font-display text-white mb-4">Setup Complete!</h2>
+                    <p className="text-[#86efac] font-mono text-sm mb-2 opacity-80">PROFILE VERIFIED: {formData.name || 'USER_ID_NULL'}</p>
+                    <p className="text-muted-foreground max-w-sm mb-2">Welcome to Metis.</p>
+                    <p className="text-muted-foreground max-w-sm mb-8 text-sm px-6">Your health profile and preferences have been successfully saved.</p>
                   </div>
                 )}
 
                 {/* Footer Controls */}
                 <div className="mt-auto pt-6 lg:pt-10 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-foreground/10">
                   <span className="text-[10px] font-mono text-muted-foreground tracking-tighter overflow-hidden whitespace-nowrap opacity-50 order-2 sm:order-1">
-                    ID: {selectedRole || "NULL"} // LANG: {formData.language.substring(0,3).toUpperCase()} // STEP: 0{currentStep}
+                    PROFILE: {selectedRole?.toUpperCase() || "PENDING"} • LANG: {formData.language.substring(0,3).toUpperCase()} • STEP 0{currentStep}
                   </span>
                   <div className="w-full sm:w-auto order-1 sm:order-2">
                     {currentStep < 6 ? (

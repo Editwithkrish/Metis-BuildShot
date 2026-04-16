@@ -38,10 +38,10 @@ export default function AuthPage() {
             <img src="/logo.png" alt="METIS Logo" className="h-12" />
           </Link>
           <h1 className="text-2xl font-display text-white mt-4">
-            {isLogin ? "Welcome back to clinical monitoring" : "Create your clinical workspace"}
+            {isLogin ? "Welcome Back" : "Create Your Account"}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Secure access to global health intelligence
+            Secure access to your health workspace
           </p>
         </div>
 
@@ -54,18 +54,18 @@ export default function AuthPage() {
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-xs font-mono text-muted-foreground ml-1">WORK EMAIL</Label>
+                <Label htmlFor="email" className="text-xs font-mono text-muted-foreground ml-1">EMAIL ADDRESS</Label>
                 <Input 
                   id="email" 
                   type="email" 
-                  placeholder="name@organization.org" 
+                  placeholder="you@email.com" 
                   required 
                   className="bg-black/50 border-white/10 h-12 rounded-none focus-visible:ring-[#86efac]/50"
                   disabled={isLoading}
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="pass" className="text-xs font-mono text-muted-foreground ml-1">ENCRYPTED KEY</Label>
+                <Label htmlFor="pass" className="text-xs font-mono text-muted-foreground ml-1">PASSWORD</Label>
                 <Input 
                   id="pass" 
                   type="password" 
@@ -89,7 +89,7 @@ export default function AuthPage() {
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  {isLogin ? "Initialize Session" : "Create Workspace"}
+                  {isLogin ? "Sign In" : "Get Started"}
                   <ArrowRight className="w-4 h-4" />
                 </span>
               )}
@@ -100,31 +100,25 @@ export default function AuthPage() {
                 <span className="w-full border-t border-white/5" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-transparent px-2 text-muted-foreground font-mono">Or secure connect</span>
+                <span className="bg-transparent px-2 text-muted-foreground font-mono">Or continue with</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-12 border-white/10 rounded-none hover:bg-white/5" disabled={isLoading}>
-                <Chrome className="w-4 h-4 mr-2" />
-                Google
-              </Button>
-              <Button variant="outline" className="h-12 border-white/10 rounded-none hover:bg-white/5" disabled={isLoading}>
-                <Github className="w-4 h-4 mr-2" />
-                GitHub
-              </Button>
-            </div>
+            <Button variant="outline" className="w-full h-12 border-white/10 rounded-none hover:bg-white/5" disabled={isLoading}>
+              <Chrome className="w-4 h-4 mr-2" />
+              Sign in with Google
+            </Button>
           </form>
 
           <div className="mt-8 text-center text-sm">
             <p className="text-muted-foreground">
-              {isLogin ? "New to the platform?" : "Already possess a key?"}{" "}
+              {isLogin ? "New to Metis?" : "Already have an account?"}{" "}
               <button 
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-[#86efac] hover:underline font-medium"
                 disabled={isLoading}
               >
-                {isLogin ? "Register workspace" : "Sign in here"}
+                {isLogin ? "Create an account" : "Sign in here"}
               </button>
             </p>
           </div>
@@ -133,7 +127,7 @@ export default function AuthPage() {
         {/* Footer Security Note */}
         <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
           <ShieldCheck className="w-3 h-3 text-[#86efac]" />
-          Clinical-grade 256-bit AES Encryption Active
+          Your health data is secure and encrypted
         </div>
       </div>
 
