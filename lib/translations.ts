@@ -18,6 +18,7 @@ export interface TranslationStrings {
     subtitle: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    installApp: string;
   };
   stats: {
     stat1Value: string;
@@ -64,6 +65,7 @@ export const translations: Record<Language, TranslationStrings> = {
       subtitle: "AI-powered nutrition and health monitoring for all ages. Early detection, personalized guidance, and global clinical impact tracking.",
       ctaPrimary: "Launch App",
       ctaSecondary: "Watch Demo",
+      installApp: "Install App",
     },
     stats: {
       stat1Value: "70%",
@@ -108,6 +110,7 @@ export const translations: Record<Language, TranslationStrings> = {
       subtitle: "सभी उम्र के लिए AI-संचालित पोषण और स्वास्थ्य निगरानी। शीघ्र पहचान, व्यक्तिगत मार्गदर्शन और वैश्विक नैदानिक प्रभाव ट्रैकिंग।",
       ctaPrimary: "ऐप शुरू करें",
       ctaSecondary: "डेमो देखें",
+      installApp: "ऐप इंस्टॉल करें",
     },
     stats: {
       stat1Value: "70%",
@@ -152,6 +155,7 @@ export const translations: Record<Language, TranslationStrings> = {
       subtitle: "सर्व वयोगटांसाठी AI-आधारित पोषण आणि आरोग्य देखरेख. लवकर निदान, वैयक्तिक मार्गदर्शन आणि जागतिक क्लिनिकल प्रभाव ट्रॅकिंग.",
       ctaPrimary: "अॅप लाँच करा",
       ctaSecondary: "डेमो पहा",
+      installApp: "अॅप इंस्टॉल करा",
     },
     stats: {
       stat1Value: "70%",
@@ -196,6 +200,7 @@ export const translations: Record<Language, TranslationStrings> = {
       subtitle: "সব বয়সের জন্য AI-চালিত পুষ্টি এবং স্বাস্থ্য পর্যবেক্ষণ। প্রাথমিক সনাক্তকরণ, ব্যক্তিগত নির্দেশিকা এবং বিশ্বব্যাপী ক্লিনিকাল প্রভাব ট্র্যাকিং।",
       ctaPrimary: "অ্যাপ শুরু করুন",
       ctaSecondary: "ডেমো দেখুন",
+      installApp: "অ্যাপ ইন্সটল করুন",
     },
     stats: {
       stat1Value: "70%",

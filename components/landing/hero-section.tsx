@@ -226,7 +226,7 @@ export function HeroSection() {
               className="h-14 px-10 bg-[#86efac]/10 hover:bg-[#86efac]/20 text-[#86efac] font-bold rounded-full border border-[#86efac]/30 transition-all flex items-center gap-3 animate-pulse"
             >
               <Smartphone className="w-5 h-5" />
-              Install App
+              {t.hero.installApp}
             </button>
           )}
         </div>
