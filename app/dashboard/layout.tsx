@@ -16,6 +16,7 @@ import {
   Menu,
   AudioLines,
   ScanEye,
+  BrainCircuit,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
 import { PatientProvider } from "@/lib/context/patient-context";
@@ -23,6 +24,7 @@ import { PatientSwitcher } from "@/components/dashboard/patient-switcher";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: BrainCircuit, label: "MetisAI", href: "/dashboard/metis-ai" },
   { icon: Baby, label: "Cry Decoder", href: "/dashboard/cry-decoder" },
   { icon: ScanEye, label: "Malnutrition Scan", href: "/dashboard/is-malnutrition" },
   { icon: TrendingUp, label: "Growth", href: "/dashboard/growth" },
@@ -117,6 +119,7 @@ export default function DashboardLayout({
                 <div>
                   <h1 className="text-lg font-display">
                     {pathname === "/dashboard" ? "Dashboard" :
+                      pathname.includes("metis-ai") ? "MetisAI Agent" :
                       pathname.includes("cry-decoder") ? "Cry Decoder" :
                       pathname.includes("is-malnutrition") ? "Malnutrition Scan" : "METIS"}
                   </h1>
