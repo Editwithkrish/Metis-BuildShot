@@ -16,6 +16,8 @@ import {
 
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { usePatient } from "@/lib/context/patient-context";
+import { PatientEmptyState } from "@/components/dashboard/patient-empty-state";
 
 /* ------------------------------------------------------------------ */
 /*  TYPES                                                             */
@@ -84,7 +86,7 @@ function GrowthStatsChart({ data, type }: { data: GrowthEntry[], type: 'weight' 
 
 export default function GrowthPage() {
   const supabase = createClient();
-  const [userData, setUserData] = useState<any>(null);
+  const { activePatient } = usePatient();
   const [history, setHistory] = useState<GrowthEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,35 +95,34 @@ export default function GrowthPage() {
   const [isAdult, setIsAdult] = useState(false);
 
   useEffect(() => {
-    fetchLogs();
-  }, []);
+    if (activePatient) {
+        fetchLogs();
+    } else {
+        setIsLoading(false);
+    }
+  }, [activePatient]);
 
   const fetchLogs = async () => {
+    if (!activePatient) return;
+    setIsLoading(true);
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const onboardingData = localStorage.getItem("metis_onboarding_data");
-      if (onboardingData) {
-        const parsed = JSON.parse(onboardingData);
-        setUserData(parsed);
-        
-        if (parsed.dob) {
-            const birthDate = new Date(parsed.dob);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-            
-            if (age >= 18) setIsAdult(true);
-        } else if (parsed.role === 'ind') {
-            setIsAdult(true);
-        }
+      if (activePatient.dob) {
+          const birthDate = new Date(activePatient.dob);
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+          
+          setIsAdult(age >= 18);
+      } else {
+          setIsAdult(activePatient.relationship_type === 'self');
       }
 
       const { data, error } = await supabase
         .from('growth_logs')
         .select('*')
+        .eq('patient_id', activePatient.id)
         .order('logged_at', { ascending: true });
 
       if (error) throw error;
@@ -142,6 +143,8 @@ export default function GrowthPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Authentication required");
 
+      if (!activePatient) throw new Error("Select a patient first");
+
       const weightValue = parseFloat(newWeight);
       const heightValue = newHeight ? parseFloat(newHeight) : null;
 
@@ -149,6 +152,7 @@ export default function GrowthPage() {
         .from('growth_logs')
         .insert([{
           profile_id: user.id,
+          patient_id: activePatient.id,
           weight: weightValue,
           height: heightValue,
           logged_at: new Date().toISOString().split('T')[0]
@@ -156,27 +160,16 @@ export default function GrowthPage() {
 
       if (error) throw error;
 
-      // Update master profile
+      // Update patient biometric record
       await supabase
-        .from('profiles')
+        .from('patients')
         .update({
-          weight: weightValue,
-          ...(heightValue && { height: heightValue }),
+          initial_weight: weightValue.toString(),
+          ...(heightValue && { initial_height: heightValue.toString() }),
           updated_at: new Date().toISOString()
         })
-        .eq('id', user.id);
+        .eq('id', activePatient.id);
 
-      // Update local storage cache
-      const localData = localStorage.getItem("metis_onboarding_data");
-      if (localData) {
-        const parsed = JSON.parse(localData);
-        localStorage.setItem("metis_onboarding_data", JSON.stringify({
-            ...parsed,
-            weight: weightValue.toString(),
-            ...(heightValue && { height: heightValue.toString() })
-        }));
-      }
-      
       toast.success("Biometric data synced.");
       setNewWeight("");
       setNewHeight("");
@@ -188,10 +181,19 @@ export default function GrowthPage() {
     }
   };
 
-  const currentWeight = history.length > 0 ? history[history.length - 1].weight : parseFloat(userData?.weight || "0");
-  const currentHeight = history.length > 0 ? history[history.length - 1].height : parseFloat(userData?.height || "0");
+  const currentWeight = history.length > 0 ? history[history.length - 1].weight : parseFloat(activePatient?.initial_weight || "0");
+  const currentHeight = history.length > 0 ? history[history.length - 1].height : parseFloat(activePatient?.initial_height || "0");
   const prevWeight = history.length > 1 ? history[history.length - 2].weight : currentWeight;
   const weightDiff = history.length > 0 ? currentWeight - prevWeight : 0;
+
+  if (!activePatient) {
+    return (
+      <PatientEmptyState 
+        title="No Patient Selected"
+        description="Select a patient from the header or enroll a new one to view growth data."
+      />
+    );
+  }
 
   return (
     <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500">
@@ -204,7 +206,7 @@ export default function GrowthPage() {
           </div>
           <h2 className="text-4xl font-display text-white">Growth Analytics</h2>
           <p className="text-xs text-muted-foreground font-mono mt-1 uppercase tracking-tight">
-            Tracking profile: <span className="text-white">{userData?.name || "Patient Zero"}</span> • {isAdult ? "Adult Protocol" : "Developmental Protocol"}
+            Tracking profile: <span className="text-white">{activePatient?.full_name || "Patient Zero"}</span> • {isAdult ? "Adult Protocol" : "Developmental Protocol"}
           </p>
         </div>
         

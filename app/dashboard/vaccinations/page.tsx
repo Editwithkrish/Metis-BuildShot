@@ -13,8 +13,11 @@ import {
   Info,
   Clock,
   ArrowUpRight,
-  Stethoscope
+  Stethoscope,
+  PlusCircle
 } from "lucide-react";
+import { usePatient } from "@/lib/context/patient-context";
+import { PatientEmptyState } from "@/components/dashboard/patient-empty-state";
 
 /* ------------------------------------------------------------------ */
 /*  VACCINATION SCHEDULE DATA                                          */
@@ -151,49 +154,21 @@ function ConfirmationModal({ isOpen, onConfirm, onCancel, vaccineName }: {
 
 export default function VaccinationsPage() {
   const supabase = createClient();
-  const [userData, setUserData] = useState<any>(null);
+  const { activePatient } = usePatient();
   const [vaccineGroups, setVaccineGroups] = useState(schedule);
   const [modalState, setModalState] = useState<{ isOpen: boolean, vaccineId: string, vaccineName: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-        try {
-            const localData = localStorage.getItem("metis_onboarding_data");
-            let dob = "";
-            let data = null;
-
-            if (localData) {
-                data = JSON.parse(localData);
-                setUserData(data);
-                dob = data.dob;
-            }
-
-            // If not in localstorage, fallback to supabase
-            if (!dob) {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('dob')
-                        .eq('id', user.id)
-                        .single();
-                    if (profile) dob = profile.dob;
-                }
-            }
-
-            if (dob) {
-                initializeSchedule(dob);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    if (activePatient) {
+        if (activePatient.dob) {
+            initializeSchedule(activePatient.dob);
         }
-    };
-
-    fetchUserData();
-  }, []);
+        setIsLoading(false);
+    } else {
+        setIsLoading(false);
+    }
+  }, [activePatient]);
 
   useEffect(() => {
     if (modalState?.isOpen) {
@@ -272,6 +247,15 @@ export default function VaccinationsPage() {
   const completedCount = vaccineGroups.flatMap(g => g.vaccines).filter(v => v.status === 'completed').length;
   const totalCount = vaccineGroups.flatMap(g => g.vaccines).length;
   const progressPercent = Math.round((completedCount / totalCount) * 100);
+
+  if (!activePatient) {
+    return (
+      <PatientEmptyState 
+        title="No Patient Selected"
+        description="Select a patient from the header or enroll a new one to view their vaccination schedule."
+      />
+    );
+  }
 
   return (
     <>
