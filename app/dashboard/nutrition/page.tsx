@@ -261,20 +261,36 @@ export default function NutritionPage() {
     setEntries(entries.filter(e => e.id !== id));
   };
 
-  const handleCapture = (img: string) => {
+  const handleCapture = async (img: string) => {
     setCapturedImage(img);
     setIsAnalyzing(true);
-    
-    // Simulate AI Population
-    setTimeout(() => {
-        const mockResults: FoodEntry[] = [
-            { id: Math.random().toString(), name: "Sourdough Bread", quantity: "2 slices", calories: 180, protein: 6, carbs: 32, fats: 1 },
-            { id: Math.random().toString(), name: "Avocado", quantity: "1/2 piece", calories: 120, protein: 2, carbs: 6, fats: 11 },
-            { id: Math.random().toString(), name: "Poached Egg", quantity: "1 large", calories: 70, protein: 6, carbs: 0, fats: 5 }
-        ];
-        setEntries(prev => [...prev, ...mockResults]);
-        setIsAnalyzing(false);
-    }, 2000);
+
+    try {
+      const res = await fetch("/api/food-detect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageDataUrl: img }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        toast.error(data.error ?? `Analysis failed (${res.status})`);
+        return;
+      }
+
+      if (data.length === 0) {
+        toast.error("No food items detected in the image. Try a clearer photo.");
+        return;
+      }
+
+      setEntries(prev => [...prev, ...data]);
+      toast.success(`${data.length} item${data.length > 1 ? "s" : ""} detected and added.`);
+    } catch (err: any) {
+      toast.error(err.message ?? "Network error — please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   if (isLoading) {

@@ -15,6 +15,7 @@ import {
   Bell,
   Menu,
   AudioLines,
+  ScanEye,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
 import { PatientProvider } from "@/lib/context/patient-context";
@@ -23,6 +24,7 @@ import { PatientSwitcher } from "@/components/dashboard/patient-switcher";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: Baby, label: "Cry Decoder", href: "/dashboard/cry-decoder" },
+  { icon: ScanEye, label: "Malnutrition Scan", href: "/dashboard/is-malnutrition" },
   { icon: TrendingUp, label: "Growth", href: "/dashboard/growth" },
   { icon: Utensils, label: "Nutrition", href: "/dashboard/nutrition" },
   { icon: Activity, label: "Activity", href: "/dashboard/activity" },
@@ -115,7 +117,8 @@ export default function DashboardLayout({
                 <div>
                   <h1 className="text-lg font-display">
                     {pathname === "/dashboard" ? "Dashboard" :
-                      pathname.includes("cry-decoder") ? "Cry Decoder" : "METIS"}
+                      pathname.includes("cry-decoder") ? "Cry Decoder" :
+                      pathname.includes("is-malnutrition") ? "Malnutrition Scan" : "METIS"}
                   </h1>
                   <p className="text-[11px] text-muted-foreground font-mono -mt-0.5 uppercase tracking-tighter">
                     {t.dashboard.welcome}, {userName.split(' ')[0]}
