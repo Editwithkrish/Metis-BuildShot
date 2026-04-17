@@ -232,9 +232,49 @@ body {
   position: static !important;
 }
 
-/* Prevent layout shift during translation */
-.skiptranslate {
-  display: none !important;
+/* ---- MetisAI Markdown Renderer ---- */
+.metis-markdown {
+  line-height: 1.75;
+  font-size: 0.925rem;
+  color: rgba(255, 255, 255, 0.92);
 }
-
-
+.metis-markdown p { margin-bottom: 0.75rem; }
+.metis-markdown p:last-child { margin-bottom: 0; }
+.metis-markdown strong { color: #ffffff; font-weight: 600; }
+.metis-markdown em { color: rgba(255, 255, 255, 0.75); }
+.metis-markdown h1, .metis-markdown h2, .metis-markdown h3, .metis-markdown h4 {
+  color: #ffffff; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; line-height: 1.3;
+}
+.metis-markdown h1:first-child, .metis-markdown h2:first-child, .metis-markdown h3:first-child { margin-top: 0; }
+.metis-markdown h1 { font-size: 1.25rem; }
+.metis-markdown h2 { font-size: 1.1rem; }
+.metis-markdown h3 { font-size: 1rem; }
+.metis-markdown ul, .metis-markdown ol { padding-left: 1.25rem; margin: 0.6rem 0; }
+.metis-markdown ul { list-style-type: disc; }
+.metis-markdown ol { list-style-type: decimal; }
+.metis-markdown li { margin: 0.25rem 0; }
+.metis-markdown ul li::marker { color: #86efac; }
+.metis-markdown code {
+  background: rgba(255,255,255,0.08); color: #86efac;
+  padding: 0.15em 0.45em; border-radius: 5px;
+  font-size: 0.82em; font-family: var(--font-mono);
+}
+.metis-markdown pre {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 1rem; overflow-x: auto; margin: 0.75rem 0;
+}
+.metis-markdown pre code { background: none; color: rgba(255,255,255,0.85); padding: 0; border-radius: 0; font-size: 0.85em; }
+.metis-markdown blockquote {
+  border-left: 3px solid rgba(134,239,172,0.4);
+  padding-left: 1rem; color: rgba(255,255,255,0.6); margin: 0.75rem 0; font-style: italic;
+}
+.metis-markdown hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 1rem 0; }
+.metis-markdown table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.75rem 0; }
+.metis-markdown th {
+  text-align: left; padding: 0.5rem 0.75rem; color: #86efac;
+  font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.metis-markdown td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+.metis-markdown a { color: #86efac; text-decoration: underline; text-underline-offset: 3px; }
+.metis-markdown a:hover { color: #ffffff; }
