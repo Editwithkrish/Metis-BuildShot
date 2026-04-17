@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Activity, ArrowRight, CheckCircle2, Globe, Heart, Shield, User, Users, Microscope, Baby, HeartPulse } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -39,7 +38,7 @@ export default function OnBoardingPage() {
     dob: "",
     feedingStatus: "Exclusive",
     clinicalLoad: "Standard",
-    isPregnant: false,
+    babyName: "",
     gender: "",
   });
   const router = useRouter();
@@ -53,7 +52,7 @@ export default function OnBoardingPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { error } = await supabase
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           full_name: formData.name,
@@ -62,22 +61,36 @@ export default function OnBoardingPage() {
           language: formData.language,
           alert_type: formData.alertType,
           data_source: formData.dataSource,
-          weight: formData.weight,
-          height: formData.height,
-          dob: formData.dob || null,
-          feeding_status: formData.feedingStatus,
-          clinical_load: formData.clinicalLoad,
-          goal: selectedGoal,
-          is_pregnant: formData.isPregnant,
-          gender: formData.gender,
           onboarding_completed: true,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Only Create the first patient record for Individual and Mothers
+      // Specialized roles (Doc/Researcher) must enroll patients explicitly later
+      if (selectedRole === 'ind' || selectedRole === 'mother') {
+        const relationshipType = 
+          selectedRole === 'ind' ? 'self' : 'child';
+
+        const { error: patientError } = await supabase
+          .from('patients')
+          .insert({
+            owner_id: user.id,
+            full_name: selectedRole === 'ind' ? formData.name : formData.babyName,
+            dob: formData.dob || null,
+            gender: formData.gender,
+            initial_weight: formData.weight,
+            initial_height: formData.height,
+            relationship_type: relationshipType
+          });
+
+        if (patientError) throw patientError;
+      }
       
-      toast.success("Profile completed!");
+      toast.success(selectedRole === 'ind' ? "Profile completed!" : 
+                   selectedRole === 'mother' ? "Profile & Baby record created!" : "Clinic Profile created!");
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Onboarding saving error:", error.message);
@@ -172,9 +185,9 @@ export default function OnBoardingPage() {
               </div>
 
               {/* Right Side: Content */}
-              <div className="lg:col-span-9 p-5 lg:p-12 min-h-[400px] flex flex-col">
+              <div className="lg:col-span-9 p-0 min-h-[500px] flex flex-col">
                 {currentStep === 1 && (
-                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex-1 p-6 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Who are you representing?</h2>
                     <div className="grid sm:grid-cols-2 gap-3">
                       {[
@@ -204,7 +217,7 @@ export default function OnBoardingPage() {
                 )}
 
                 {currentStep === 2 && (
-                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex-1 p-6 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Your Region</h2>
                     <p className="text-muted-foreground mb-8 text-sm">Select your primary geographical region to load relevant nutritional metadata and government scheme datasets.</p>
                     <div className="space-y-4">
@@ -224,7 +237,7 @@ export default function OnBoardingPage() {
                 )}
 
                 {currentStep === 3 && (
-                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex-1 p-6 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Health Details</h2>
                     
                     <div className="space-y-5">
@@ -239,7 +252,7 @@ export default function OnBoardingPage() {
                         />
                       </div>
 
-                      {(selectedRole === 'mother' || selectedRole === 'ind' || selectedRole === 'caregiver') ? (
+                      {(selectedRole === 'mother' || selectedRole === 'ind') ? (
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2 col-span-2">
                             <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
@@ -291,30 +304,19 @@ export default function OnBoardingPage() {
                       )}
                       
                       {selectedRole === 'mother' && (
-                        <div className="space-y-3">
-                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Current Status</label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {[
-                              { id: true, label: 'Pregnant' },
-                              { id: false, label: 'Post-natal / Baby' }
-                            ].map(status => (
-                              <button
-                                key={status.label}
-                                onClick={() => setFormData({...formData, isPregnant: status.id})}
-                                className={`py-2 text-[10px] border font-mono transition-all ${
-                                  formData.isPregnant === status.id 
-                                    ? "border-[#86efac] text-[#86efac] bg-[#86efac]/5" 
-                                    : "border-foreground/10 text-muted-foreground hover:border-foreground/30"
-                                }`}
-                              >
-                                {status.label}
-                              </button>
-                            ))}
-                          </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Baby's Name</label>
+                          <input 
+                            type="text" 
+                            placeholder="Enter baby's name..."
+                            value={formData.babyName}
+                            onChange={(e) => setFormData({...formData, babyName: e.target.value})}
+                            className="w-full bg-foreground/[0.03] border border-foreground/10 px-4 py-3 text-white focus:border-[#86efac]/50 focus:outline-none transition-colors font-mono text-xs"
+                          />
                         </div>
                       )}
 
-                      {((selectedRole === 'mother' && !formData.isPregnant) || selectedRole === 'ind') && (
+                      {(selectedRole === 'mother' || selectedRole === 'ind') && (
                         <div className="space-y-3">
                           <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
                             {selectedRole === 'mother' ? "Baby's Gender" : "Gender"}
@@ -337,7 +339,7 @@ export default function OnBoardingPage() {
                         </div>
                       )}
 
-                      {selectedRole === 'mother' && !formData.isPregnant && (
+                      {selectedRole === 'mother' && (
                         <div className="space-y-3">
                           <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Breastfeeding Status</label>
                           <div className="grid grid-cols-3 gap-2">
@@ -390,7 +392,7 @@ export default function OnBoardingPage() {
                 )}
 
                 {currentStep === 4 && (
-                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex-1 p-6 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">Your Preferences</h2>
                     
                     <div className="space-y-6">
@@ -457,7 +459,7 @@ export default function OnBoardingPage() {
                 )}
 
                 {currentStep === 5 && (
-                  <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex-1 p-6 lg:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
                     <h2 className="text-2xl font-display text-white mb-8">What are your monitoring goals?</h2>
                     <div className="space-y-3">
                       {[
@@ -490,7 +492,7 @@ export default function OnBoardingPage() {
                 )}
 
                 {currentStep === 6 && (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-700">
+                  <div className="flex flex-col items-center justify-center text-center p-6 lg:p-12 animate-in zoom-in-95 duration-700">
                     <div className="w-20 h-20 rounded-full bg-[#86efac]/10 flex items-center justify-center mb-8 relative">
                       <div className="absolute inset-0 rounded-full border border-[#86efac] animate-ping opacity-20" />
                       <CheckCircle2 className="w-10 h-10 text-[#86efac]" />
@@ -503,11 +505,20 @@ export default function OnBoardingPage() {
                 )}
 
                 {/* Footer Controls */}
-                <div className="mt-auto pt-6 lg:pt-10 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-foreground/10">
+                <div className={`mt-auto p-6 lg:p-10 flex flex-col sm:flex-row justify-between items-center gap-6 ${currentStep === 2 ? "" : "border-t border-foreground/10"}`}>
                   <span className="text-[10px] font-mono text-muted-foreground tracking-tighter overflow-hidden whitespace-nowrap opacity-50 order-2 sm:order-1">
                     PROFILE: {selectedRole?.toUpperCase() || "PENDING"} • LANG: {formData.language.substring(0,3).toUpperCase()} • STEP 0{currentStep}
                   </span>
-                  <div className="w-full sm:w-auto order-1 sm:order-2">
+                  <div className="w-full sm:w-auto order-1 sm:order-2 flex items-center gap-4">
+                    {currentStep > 1 && currentStep < 6 && (
+                      <button 
+                        onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+                        className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest hover:text-white transition-colors"
+                      >
+                        Previous Step
+                      </button>
+                    )}
+                    
                     {currentStep < 6 ? (
                       <Button 
                         onClick={nextStep}
@@ -516,7 +527,7 @@ export default function OnBoardingPage() {
                           (currentStep === 3 && (
                             !formData.name || 
                             (selectedRole === 'ind' && !formData.gender) ||
-                            (selectedRole === 'mother' && !formData.isPregnant && !formData.gender)
+                            (selectedRole === 'mother' && (!formData.babyName || !formData.gender))
                           )) ||
                           (currentStep === 5 && !selectedGoal)
                         }
@@ -541,21 +552,7 @@ export default function OnBoardingPage() {
           </Card>
         </div>
       </div>
-      <style jsx global>{`
-        .noise-overlay {
-          position: relative;
-        }
-          z-index: 100;
-          pointer-events: none;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+
     </main>
   );
 }

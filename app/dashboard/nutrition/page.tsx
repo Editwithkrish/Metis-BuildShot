@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useLanguage } from "@/lib/i18n-context";
+import { usePatient } from "@/lib/context/patient-context";
+import { PatientEmptyState } from "@/components/dashboard/patient-empty-state";
 import { 
   Utensils, 
   Camera, 
@@ -126,36 +128,40 @@ function CameraModal({ isOpen, onClose, onCapture }: { isOpen: boolean, onClose:
 
 export default function NutritionPage() {
   const supabase = createClient();
+  const { activePatient } = usePatient();
   const [selectedMeal, setSelectedMeal] = useState("Breakfast");
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [userData, setUserData] = useState<any>(null);
   const [dailyLogs, setDailyLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (activePatient) {
+        fetchData();
+    } else {
+        setIsLoading(false);
+    }
+  }, [activePatient]);
 
   const fetchData = async () => {
+    if (!activePatient) return;
+    setIsLoading(true);
+    
     try {
-      const data = localStorage.getItem("metis_onboarding_data");
-      if (data) setUserData(JSON.parse(data));
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch today's logs
+      // Fetch today's logs for the ACTIVE PATIENT
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const { data: logs, error } = await supabase
         .from('nutrition_logs')
         .select('*')
-        .eq('profile_id', user.id)
+        .eq('patient_id', activePatient.id)
         .gte('logged_at', today.toISOString())
         .order('logged_at', { ascending: false });
 
@@ -169,13 +175,13 @@ export default function NutritionPage() {
   };
 
   const calculateTargetIntake = () => {
-    if (!userData || !userData.dob) return 2200; // Default fallback
+    if (!activePatient || !activePatient.dob) return 2200; // Default fallback
 
-    const weight = parseFloat(userData.weight || "70");
-    const height = parseFloat(userData.height || "170");
+    const weight = parseFloat(activePatient.initial_weight || "70");
+    const height = parseFloat(activePatient.initial_height || "170");
     
-    // Calculate Age from DOB
-    const birthDate = new Date(userData.dob);
+    // Calculate Age from Patient DOB
+    const birthDate = new Date(activePatient.dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
@@ -185,7 +191,7 @@ export default function NutritionPage() {
     const diffMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
     
     // INFANT CALCULATION (Weight-based under 2 years)
-    if (userData.role === 'mother' && diffMonths < 24) {
+    if (activePatient.relationship_type === 'child' && diffMonths < 24) {
         // Average ~90-100 kcal per kg for infants
         return Math.round(weight * 95);
     }
@@ -193,15 +199,11 @@ export default function NutritionPage() {
     // ADULT CALCULATION (Mifflin-St Jeor)
     let bmr = (10 * weight) + (6.25 * height) - (5 * age);
     
-    if (userData.gender === 'Male') bmr += 5;
+    if (activePatient.gender === 'Male') bmr += 5;
     else bmr -= 161;
 
     // Add activity multiplier (Sedentary 1.2)
     let target = bmr * 1.2;
-
-    // Pregnancy/Lactation Adjustments
-    if (userData.isPregnant) target += 350;
-    if (userData.role === 'mother' && !userData.isPregnant) target += 500; // Lactation boost
 
     return Math.round(target);
   };
@@ -227,8 +229,11 @@ export default function NutritionPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Auth required");
 
+      if (!activePatient) throw new Error("Select a patient first");
+
       const logsToInsert = entries.map(entry => ({
         profile_id: user.id,
+        patient_id: activePatient.id,
         meal_type: selectedMeal,
         food_name: entry.name,
         quantity: entry.quantity,
@@ -278,6 +283,15 @@ export default function NutritionPage() {
             <div className="w-10 h-10 border-2 border-[#86efac]/10 border-t-[#86efac] rounded-full animate-spin" />
             <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Accessing Nutritional Core</p>
         </div>
+    );
+  }
+
+  if (!activePatient) {
+    return (
+      <PatientEmptyState 
+        title="No Patient Selected"
+        description="Enroll or select a patient to access the nutrition planner, calorie logs, and dietary analysis."
+      />
     );
   }
 

@@ -18,6 +18,8 @@ import {
   AudioLines,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
+import { PatientProvider } from "@/lib/context/patient-context";
+import { PatientSwitcher } from "@/components/dashboard/patient-switcher";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -48,11 +50,12 @@ export default function DashboardLayout({
   }, []);
 
   const userName = userData?.name || "Sarah Wilson";
-  const userRole = userData?.role === 'mother' ? "MOM OF BABY LEO" : 
+  const userRole = userData?.role === 'mother' ? "MOM" : 
                    userData?.role === 'doc' ? "CLINICAL DOCTOR" : 
                    userData?.role?.toUpperCase() || "INDIVIDUAL";
 
   return (
+    <PatientProvider>
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -118,17 +121,14 @@ export default function DashboardLayout({
                   {pathname === "/dashboard" ? "Dashboard" : 
                    pathname.includes("cry-decoder") ? "Cry Decoder" : "METIS"}
                 </h1>
-                <p className="text-[11px] text-muted-foreground font-mono -mt-0.5">
+                <p className="text-[11px] text-muted-foreground font-mono -mt-0.5 uppercase tracking-tighter">
                   {t.dashboard.welcome}, {userName.split(' ')[0]}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/dashboard/cry-decoder" className="hidden sm:flex items-center gap-2 px-4 py-2 border border-foreground/10 hover:border-[#86efac]/30 hover:bg-[#86efac]/5 transition-all text-xs font-mono uppercase tracking-wider">
-                <AudioLines className="w-4 h-4 text-[#86efac]" />
-                Cry Decoder
-              </Link>
+              <PatientSwitcher />
 
               <button className="relative w-9 h-9 flex items-center justify-center border border-foreground/10 hover:bg-foreground/5 transition-colors">
                 <Bell className="w-4 h-4" />
@@ -155,5 +155,6 @@ export default function DashboardLayout({
         </main>
       </div>
     </div>
+    </PatientProvider>
   );
 }
