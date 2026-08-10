@@ -39,6 +39,21 @@ export default function AshaLoginPage() {
     };
   }, []);
 
+  const openWorkspace = (workerId: string, mobile: string) => {
+    setSubmitting(true);
+    const session = {
+      ashaId: workerId.trim().toUpperCase(),
+      phone: mobile.replace(/\D/g, ""),
+      name: workerId === "ASHA-DEMO-01" ? "Demo ASHA Worker" : "ASHA Worker",
+      ward: "Ward 14",
+      verifiedAt: new Date().toISOString(),
+      offline: !online,
+    };
+    localStorage.setItem("metis_asha_session", JSON.stringify(session));
+    document.cookie = "metis_asha_session=active; path=/; max-age=2592000; SameSite=Lax";
+    window.setTimeout(() => router.push("/asha"), 250);
+  };
+
   const signIn = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -55,18 +70,15 @@ export default function AshaLoginPage() {
       return;
     }
 
-    setSubmitting(true);
-    const session = {
-      ashaId: ashaId.trim().toUpperCase(),
-      phone: phone.replace(/\D/g, ""),
-      name: "ASHA Worker",
-      ward: "Ward 14",
-      verifiedAt: new Date().toISOString(),
-      offline: !online,
-    };
-    localStorage.setItem("metis_asha_session", JSON.stringify(session));
-    document.cookie = "metis_asha_session=active; path=/; max-age=2592000; SameSite=Lax";
-    window.setTimeout(() => router.push("/asha"), 350);
+    openWorkspace(ashaId, phone);
+  };
+
+  const useDemoAccess = () => {
+    setError("");
+    setAshaId("ASHA-DEMO-01");
+    setPhone("9876543210");
+    setPin("1234");
+    openWorkspace("ASHA-DEMO-01", "9876543210");
   };
 
   return (
@@ -128,6 +140,14 @@ export default function AshaLoginPage() {
             {error && <p role="alert" className="border border-rose-400/25 bg-rose-400/[0.07] px-3 py-2.5 text-xs text-rose-200">{error}</p>}
 
             <button disabled={submitting} className="flex h-12 w-full items-center justify-center gap-2 bg-[#86efac] text-xs font-bold text-black transition-colors hover:bg-[#a2f3bf] disabled:opacity-60">{submitting ? "Opening secure workspace…" : <>Continue to METIS Field <ArrowRight className="h-4 w-4" /></>}</button>
+            <button
+              type="button"
+              onClick={useDemoAccess}
+              disabled={submitting}
+              className="flex h-11 w-full items-center justify-center border border-[#86efac]/25 bg-[#86efac]/5 text-xs font-semibold text-[#86efac] transition-colors hover:bg-[#86efac]/10 disabled:opacity-60"
+            >
+              Use demo access
+            </button>
           </form>
 
           <div className="mt-6 flex items-start gap-2 border-t border-foreground/10 pt-5 text-[10px] leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#86efac]" />Offline access is limited to records previously saved on this verified device. Never share your device PIN.</div>

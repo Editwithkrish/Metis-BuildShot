@@ -124,13 +124,17 @@ export function HeroSection() {
 
   const handleLaunchApp = async () => {
     if (isInstalled) {
-      window.location.assign("/asha/login");
+      window.location.assign("/auth");
       return;
     }
 
     if (canInstall) {
       const installed = await installApp();
-      if (!installed) setShowInstallHelp(true);
+      if (installed) {
+        window.location.assign("/auth");
+      } else {
+        setShowInstallHelp(true);
+      }
       return;
     }
 
@@ -249,6 +253,13 @@ export function HeroSection() {
               <p className="mt-2 text-xs leading-relaxed text-white/60">
                 On Android or desktop, open the browser menu and choose <span className="text-white">Install app</span>. On iPhone or iPad, open this page in Safari, tap <span className="text-white">Share</span>, then <span className="text-white">Add to Home Screen</span>.
               </p>
+              <button
+                type="button"
+                onClick={() => window.location.assign("/auth")}
+                className="mt-4 flex h-10 w-full items-center justify-center rounded-full bg-[#86efac] px-5 text-xs font-bold text-black transition-colors hover:bg-[#a2f3bf]"
+              >
+                Continue to sign in
+              </button>
             </div>
           )}
         </div>

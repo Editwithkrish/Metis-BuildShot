@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Github, Mail, Chrome, ArrowRight, ShieldCheck } from "lucide-react";
+import { Chrome, ArrowRight, ShieldCheck, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -19,10 +19,6 @@ export default function AuthPage() {
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   );
 
-  useEffect(() => {
-    if (!hasSupabaseConfig) router.replace("/dashboard");
-  }, [hasSupabaseConfig, router]);
-
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -32,7 +28,9 @@ export default function AuthPage() {
     const password = formData.get("pass") as string;
 
     if (!hasSupabaseConfig) {
-      toast.success("Local preview mode: continuing without sign-in");
+      localStorage.setItem("metis_family_session", JSON.stringify({ email, signedInAt: new Date().toISOString() }));
+      toast.success("Welcome to your family health workspace");
+      setIsLoading(false);
       router.push("/dashboard");
       return;
     }
@@ -196,6 +194,19 @@ export default function AuthPage() {
                 {isLogin ? "Create an account" : "Sign in here"}
               </button>
             </p>
+          </div>
+
+          <div className="mt-7 border-t border-white/10 pt-6">
+            <p className="mb-3 text-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+              Community health worker
+            </p>
+            <Link
+              href="/asha/login"
+              className="flex h-12 w-full items-center justify-center gap-2 border border-[#86efac]/30 bg-[#86efac]/5 text-sm font-semibold text-[#86efac] transition-colors hover:bg-[#86efac]/10"
+            >
+              <Stethoscope className="h-4 w-4" />
+              Login for ASHA
+            </Link>
           </div>
         </Card>
 
