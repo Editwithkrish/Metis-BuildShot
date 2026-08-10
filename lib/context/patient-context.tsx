@@ -29,9 +29,17 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
   const [activePatient, setActivePatientState] = useState<Patient | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+  const hasSupabaseConfig = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  );
+  const supabase = hasSupabaseConfig ? createClient() : null;
 
   const refreshPatients = async () => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;

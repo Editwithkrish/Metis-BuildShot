@@ -62,12 +62,12 @@ export function CtaSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4">
-              <Link href="/auth">
+              <Link href="/asha/login">
                 <Button
                   size="lg"
                   className="bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold px-10 h-14 text-base rounded-full group shadow-[0_0_20px_rgba(134,239,172,0.3)]"
                 >
-                  Launch App
+                  ASHA Worker Login
                   <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>

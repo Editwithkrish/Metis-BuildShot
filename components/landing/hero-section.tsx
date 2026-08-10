@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
 import { usePWA } from "@/lib/use-pwa";
-import { Smartphone } from "lucide-react";
+import { Download, X } from "lucide-react";
 
 
 
@@ -112,15 +111,31 @@ function BlurWord({ word, trigger }: { word: string; trigger: number }) {
 
 export function HeroSection() {
   const { t } = useLanguage();
-  const { canInstall, installApp } = usePWA();
+  const { canInstall, isInstalled, installApp } = usePWA();
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
 
   const words = [t.hero.titleLine3, "detect", "monitor", "guide"];
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleLaunchApp = async () => {
+    if (isInstalled) {
+      window.location.assign("/asha/login");
+      return;
+    }
+
+    if (canInstall) {
+      const installed = await installApp();
+      if (!installed) setShowInstallHelp(true);
+      return;
+    }
+
+    setShowInstallHelp(true);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -205,29 +220,36 @@ export function HeroSection() {
           </h1>
         </div>
 
-        {/* CTA Buttons */}
+        {/* Primary PWA action */}
         <div 
-          className={`flex flex-col sm:flex-row items-start gap-4 mt-12 transition-all duration-1000 delay-300 ${
+          className={`relative mt-12 transition-all duration-1000 delay-300 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <Link href="/auth">
-            <button className="h-14 px-10 bg-[#86efac] hover:bg-[#86efac]/90 text-black font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(134,239,172,0.3)]">
-              {t.hero.ctaPrimary}
-            </button>
-          </Link>
-          <button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white font-medium rounded-full border border-white/10 transition-all backdrop-blur-md">
-            {t.hero.ctaSecondary}
+          <button
+            type="button"
+            onClick={handleLaunchApp}
+            className="flex h-14 items-center gap-3 rounded-full bg-[#86efac] px-10 font-bold text-black shadow-[0_0_20px_rgba(134,239,172,0.3)] transition-all hover:scale-105 hover:bg-[#86efac]/90 active:scale-95"
+          >
+            <Download className="h-5 w-5" />
+            Launch App
           </button>
-          
-          {canInstall && (
-            <button 
-              onClick={installApp}
-              className="h-14 px-10 bg-[#86efac]/10 hover:bg-[#86efac]/20 text-[#86efac] font-bold rounded-full border border-[#86efac]/30 transition-all flex items-center gap-3 animate-pulse"
-            >
-              <Smartphone className="w-5 h-5" />
-              {t.hero.installApp}
-            </button>
+
+          {showInstallHelp && (
+            <div className="absolute left-0 top-20 z-20 w-[min(90vw,390px)] border border-white/15 bg-black/90 p-5 text-white shadow-2xl backdrop-blur-xl">
+              <button
+                type="button"
+                onClick={() => setShowInstallHelp(false)}
+                aria-label="Close install instructions"
+                className="absolute right-3 top-3 p-1 text-white/50 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <p className="pr-8 text-sm font-semibold">Install METIS on this device</p>
+              <p className="mt-2 text-xs leading-relaxed text-white/60">
+                On Android or desktop, open the browser menu and choose <span className="text-white">Install app</span>. On iPhone or iPad, open this page in Safari, tap <span className="text-white">Share</span>, then <span className="text-white">Add to Home Screen</span>.
+              </p>
+            </div>
           )}
         </div>
         </div>

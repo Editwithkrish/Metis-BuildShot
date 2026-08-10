@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,13 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const hasSupabaseConfig = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  );
+
+  useEffect(() => {
+    if (!hasSupabaseConfig) router.replace("/dashboard");
+  }, [hasSupabaseConfig, router]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +30,12 @@ export default function AuthPage() {
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const email = formData.get("email") as string;
     const password = formData.get("pass") as string;
+
+    if (!hasSupabaseConfig) {
+      toast.success("Local preview mode: continuing without sign-in");
+      router.push("/dashboard");
+      return;
+    }
     
     const supabase = createClient();
     
@@ -56,6 +69,12 @@ export default function AuthPage() {
   };
 
   const handleGoogleAuth = async () => {
+    if (!hasSupabaseConfig) {
+      toast.success("Local preview mode: continuing without sign-in");
+      router.push("/dashboard");
+      return;
+    }
+
     setIsLoading(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({

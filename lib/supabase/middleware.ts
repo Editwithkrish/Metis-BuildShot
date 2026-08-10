@@ -8,6 +8,13 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
+  // Allow the UI to run locally before Supabase credentials are configured.
+  // Authentication and protected-route redirects remain active whenever the
+  // required environment variables are present.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    return response
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,

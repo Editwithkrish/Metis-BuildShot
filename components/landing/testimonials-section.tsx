@@ -34,16 +34,17 @@ const testimonials = [
   },
 ];
 
+const asciiPattern = Array.from({ length: 60 }, (_, row) =>
+  Array.from({ length: 100 }, (_, column) =>
+    (row * 17 + column * 31) % 10 > 6 ? '"' : " "
+  ).join("")
+).join("\n");
+
 export function TestimonialsSection() {
-  const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -85,15 +86,9 @@ export function TestimonialsSection() {
   return (
     <section ref={sectionRef} className="relative py-32 lg:py-40 bg-foreground text-background overflow-hidden">
       {/* ASCII background pattern */}
-      {mounted && (
-        <div className="absolute inset-0 font-mono text-[10px] text-background/[0.02] leading-tight overflow-hidden whitespace-pre select-none">
-          {Array.from({ length: 60 }, (_, i) => 
-            Array.from({ length: 100 }, () => 
-              Math.random() > 0.7 ? '"' : ' '
-            ).join("")
-          ).join("\n")}
-        </div>
-      )}
+      <div className="absolute inset-0 font-mono text-[10px] text-background/[0.02] leading-tight overflow-hidden whitespace-pre select-none">
+        {asciiPattern}
+      </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header */}

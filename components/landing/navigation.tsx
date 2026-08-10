@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Globe, ChevronDown, Smartphone } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, Smartphone, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
-import { setGoogleTranslate } from "@/lib/translate-util";
 import { usePWA } from "@/lib/use-pwa";
 import {
   DropdownMenu,
@@ -18,11 +17,13 @@ export function Navigation() {
   const { t, language, setLanguage } = useLanguage();
   const { canInstall, installApp } = usePWA();
   const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
     // Detect iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
   }, []);
   
   const navLinks = [
@@ -116,24 +117,28 @@ export function Navigation() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-xl border-foreground/10 p-2">
-                <DropdownMenuItem onClick={() => { setLanguage('en'); setGoogleTranslate('en'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                <DropdownMenuItem onClick={() => setLanguage('en')} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
                   ENGLISH <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">EN</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { setLanguage('hi'); setGoogleTranslate('hi'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                <DropdownMenuItem onClick={() => setLanguage('hi')} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
                   हिन्दी <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">HINDI</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { setLanguage('mr'); setGoogleTranslate('mr'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                <DropdownMenuItem onClick={() => setLanguage('mr')} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
                   मराठी <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">MARATHI</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { setLanguage('bn'); setGoogleTranslate('bn'); }} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
+                <DropdownMenuItem onClick={() => setLanguage('bn')} className="flex items-center justify-between font-mono text-xs cursor-pointer rounded-lg hover:bg-[#86efac]/10 focus:bg-[#86efac]/10 group">
                   বাংলা <span className="text-[10px] opacity-0 group-hover:opacity-50 transition-opacity">BENGALI</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <a href="#" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
+            <Link href="/auth" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
               {t.nav.signIn}
-            </a>
+            </Link>
+            <Link href="/asha/login" className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-wider text-[#86efac] transition-colors hover:text-[#a2f3bf]">
+              <UsersRound className="h-4 w-4" />
+              ASHA LOGIN
+            </Link>
             <Link href="/auth">
               <Button
                 size="sm"
@@ -207,7 +212,7 @@ export function Navigation() {
               </Button>
             )}
 
-            {!canInstall && isIOS && !(window.navigator as any).standalone && (
+            {!canInstall && isIOS && !isStandalone && (
               <div className="mb-6 p-4 rounded-2xl bg-[#86efac]/5 border border-[#86efac]/20 text-center">
                 <p className="text-[#86efac] text-xs font-mono mb-2 uppercase tracking-widest">To Install on iOS</p>
                 <p className="text-foreground/70 text-[11px]">
@@ -228,7 +233,7 @@ export function Navigation() {
                 ].map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => { setLanguage(lang.code as any); setGoogleTranslate(lang.code); }}
+                    onClick={() => setLanguage(lang.code as any)}
                     className={`h-12 rounded-xl text-xs font-mono transition-all border ${
                       language === lang.code 
                         ? "bg-[#86efac] border-[#86efac] text-black font-bold" 
@@ -261,6 +266,13 @@ export function Navigation() {
                 </Button>
               </Link>
             </div>
+            <Link
+              href="/asha/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-full border border-[#86efac]/30 bg-[#86efac]/5 text-sm font-bold text-[#86efac]"
+            >
+              <UsersRound className="h-4 w-4" /> ASHA Worker Login
+            </Link>
           </div>
         </div>
       </div>
