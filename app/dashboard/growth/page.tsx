@@ -14,21 +14,11 @@ import {
   AlertCircle
 } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/client";
+import { localRequest, postLocal } from "@/lib/local/request";
+import { type GrowthEntry } from "@/lib/local/records";
 import { toast } from "sonner";
 import { usePatient } from "@/lib/context/patient-context";
 import { PatientEmptyState } from "@/components/dashboard/patient-empty-state";
-
-/* ------------------------------------------------------------------ */
-/*  TYPES                                                             */
-/* ------------------------------------------------------------------ */
-
-interface GrowthEntry {
-  id?: string;
-  logged_at: string;
-  weight: number;
-  height?: number;
-}
 
 /* ------------------------------------------------------------------ */
 /*  GROWTH CHART (SVG)                                                 */
@@ -85,115 +75,79 @@ function GrowthStatsChart({ data, type }: { data: GrowthEntry[], type: 'weight' 
 /* ------------------------------------------------------------------ */
 
 export default function GrowthPage() {
-  const supabase = createClient();
   const { activePatient } = usePatient();
+  if (!activePatient) {
+    return (
+      <PatientEmptyState
+        title="No Patient Selected"
+        description="Select a patient from the header or enroll a new one to view growth data."
+      />
+    );
+  }
+
+  return <PatientGrowth key={activePatient.id} />;
+}
+
+function PatientGrowth() {
+  const { activePatient, refreshPatients } = usePatient();
   const [history, setHistory] = useState<GrowthEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newWeight, setNewWeight] = useState("");
   const [newHeight, setNewHeight] = useState("");
-  const [isAdult, setIsAdult] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const patientId = activePatient?.id;
 
   useEffect(() => {
-    if (activePatient) {
-        fetchLogs();
-    } else {
-        setIsLoading(false);
-    }
-  }, [activePatient]);
+    if (!patientId) return;
+    const controller = new AbortController();
+    localRequest<GrowthEntry[]>(`/api/growth?patient_id=${patientId}`, { signal: controller.signal })
+      .then(setHistory)
+      .catch(() => {
+        if (!controller.signal.aborted) toast.error("Failed to load historical data.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
 
-  const fetchLogs = async () => {
-    if (!activePatient) return;
-    setIsLoading(true);
-    
-    try {
-      if (activePatient.dob) {
-          const birthDate = new Date(activePatient.dob);
-          const today = new Date();
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const m = today.getMonth() - birthDate.getMonth();
-          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-          
-          setIsAdult(age >= 18);
-      } else {
-          setIsAdult(activePatient.relationship_type === 'self');
-      }
+    return () => controller.abort();
+  }, [patientId, revision]);
 
-      const { data, error } = await supabase
-        .from('growth_logs')
-        .select('*')
-        .eq('patient_id', activePatient.id)
-        .order('logged_at', { ascending: true });
-
-      if (error) throw error;
-      setHistory(data || []);
-    } catch (error: any) {
-      console.error("Error fetching logs:", error.message);
-      toast.error("Failed to load historical data.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const today = new Date();
+  const dob = activePatient?.dob;
+  const adulthood = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  const isAdult = dob ? new Date(`${dob}T00:00:00`) <= adulthood : activePatient?.relationship_type === "self";
 
   const addEntry = async () => {
     if (!newWeight) return;
     setIsSubmitting(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Authentication required");
+      if (!patientId) throw new Error("Select a patient first");
 
-      if (!activePatient) throw new Error("Select a patient first");
+      await postLocal("/api/growth", {
+        patient_id: patientId,
+        weight: Number(newWeight),
+        height: newHeight ? Number(newHeight) : null,
+        logged_at: new Date().toISOString().slice(0, 10),
+      });
 
-      const weightValue = parseFloat(newWeight);
-      const heightValue = newHeight ? parseFloat(newHeight) : null;
-
-      const { error } = await supabase
-        .from('growth_logs')
-        .insert([{
-          profile_id: user.id,
-          patient_id: activePatient.id,
-          weight: weightValue,
-          height: heightValue,
-          logged_at: new Date().toISOString().split('T')[0]
-        }]);
-
-      if (error) throw error;
-
-      // Update patient biometric record
-      await supabase
-        .from('patients')
-        .update({
-          initial_weight: weightValue.toString(),
-          ...(heightValue && { initial_height: heightValue.toString() }),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', activePatient.id);
-
+      await refreshPatients();
       toast.success("Biometric data synced.");
       setNewWeight("");
       setNewHeight("");
-      fetchLogs();
-    } catch (error: any) {
-      toast.error(error.message);
+      setRevision((count) => count + 1);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save growth data.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const currentWeight = history.length > 0 ? history[history.length - 1].weight : parseFloat(activePatient?.initial_weight || "0");
-  const currentHeight = history.length > 0 ? history[history.length - 1].height : parseFloat(activePatient?.initial_height || "0");
+  const currentHeight = history[history.length - 1]?.height ?? parseFloat(activePatient?.initial_height || "0");
   const prevWeight = history.length > 1 ? history[history.length - 2].weight : currentWeight;
   const weightDiff = history.length > 0 ? currentWeight - prevWeight : 0;
-
-  if (!activePatient) {
-    return (
-      <PatientEmptyState 
-        title="No Patient Selected"
-        description="Select a patient from the header or enroll a new one to view growth data."
-      />
-    );
-  }
 
   return (
     <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500">

@@ -31,7 +31,7 @@ The landing-page **Launch App** button opens the PWA installation prompt when th
 - High-risk and due-visit follow-up queue
 - Village coverage map with Google Maps
 - Screening and referral decision support
-- Local device sessions and offline-ready records
+- Local demo sign-in and offline-ready records
 
 ## PWA and offline behavior
 
@@ -52,7 +52,7 @@ Google Maps and services that require a live API remain network-dependent.
 | `/` | Public landing page and PWA launch action |
 | `/auth` | Default family and mother login |
 | `/dashboard` | Family health workspace |
-| `/asha/login` | ASHA worker login and demo access |
+| `/asha/login` | ASHA worker demo login |
 | `/asha` | ASHA risk-monitoring panel |
 | `/asha/children` | Offline child registry |
 | `/asha/follow-ups` | Priority follow-up queue |
@@ -65,33 +65,38 @@ Legacy `/dashboard/asha/*` links redirect to their equivalent `/asha/*` pages.
 - Next.js 16 App Router and React 19
 - TypeScript
 - Tailwind CSS
-- Supabase SSR authentication support
+- Local demo accounts and SQLite storage through Node.js
 - Vercel Analytics and deployment
 - Browser service worker, Cache Storage, and local storage for offline-first behavior
 
-The UI can run in preview mode without Supabase credentials. Configure Supabase for real account verification and persistent cloud data.
-
 ## Local development
 
-Requirements: Node.js 20 or newer and npm.
+Requirements: Node.js 22.13 or newer and npm.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Environment variables
+### Demo accounts
 
-Create `.env.local` when connecting a Supabase project:
+Each account uses the password `aBc@123`. Use these credentials for local demo data.
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-```
+| Role | Email |
+| --- | --- |
+| Family / Individual | `family@heddle.so` |
+| Mother | `mother@heddle.so` |
+| Caregiver | `caregiver@heddle.so` |
+| Doctor | `doctor@heddle.so` |
+| Health worker | `healthworker@heddle.so` |
+| Researcher | `researcher@heddle.so` |
+| ASHA worker | `asha@heddle.so` |
 
-Without these values, the family login uses local preview access and the ASHA login supports validated local device access plus a one-click demo.
+`contact@heddle.so` also signs in to the family account. Each family workspace account completes onboarding on first sign-in. The ASHA account opens the field workspace directly.
+
+The app creates `.metis/metis.sqlite` automatically for sign-in sessions, profiles, patient records, and growth and nutrition logs. ASHA field records are stored in the browser. Sign-in and SQLite-backed features require the local server to be running. The optional food and malnutrition scanning services use `FASTROUTER_API_KEY` in `.env.local`.
 
 ## Validation
 

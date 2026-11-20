@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { SignOutButton } from "@/components/sign-out-button";
 import {
   Activity,
   AlertTriangle,
@@ -358,6 +359,10 @@ export default function AshaPanel() {
               {online ? <Network className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
               <span className="hidden sm:inline">{online ? "Online" : "Offline"}</span>
             </span>
+            <SignOutButton
+              destination="/asha/login"
+              className="flex h-9 w-9 items-center justify-center border border-foreground/10 text-muted-foreground hover:text-destructive"
+            />
             <div className="hidden items-center gap-2 border-l border-foreground/10 pl-3 md:flex">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#86efac]/15 text-xs text-[#86efac]">AS</span>
               <div>
@@ -418,8 +423,8 @@ export default function AshaPanel() {
             </div>
             <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">Screenings stay encrypted on this device and enter the sync queue automatically.</p>
           </div>
-          <Link href="/dashboard" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-3.5 w-3.5" /> Family dashboard
+          <Link href="/auth" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-3.5 w-3.5" /> Family login
           </Link>
         </aside>
 

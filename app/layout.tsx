@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { LanguageProvider } from "@/lib/i18n-context"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: 'METIS - Motherhood & Newborn Care Intelligence Platform',
@@ -48,6 +49,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
+        <Toaster theme="dark" />
         <Analytics />
         {process.env.NODE_ENV === "production" ? (
           <Script id="service-worker-registration" strategy="afterInteractive">

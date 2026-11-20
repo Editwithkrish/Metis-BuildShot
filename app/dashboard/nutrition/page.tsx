@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { localRequest, postLocal } from "@/lib/local/request";
+import { type NutritionEntry } from "@/lib/local/records";
 import { toast } from "sonner";
 import { useLanguage } from "@/lib/i18n-context";
 import { usePatient } from "@/lib/context/patient-context";
@@ -127,52 +128,51 @@ function CameraModal({ isOpen, onClose, onCapture }: { isOpen: boolean, onClose:
 /* ------------------------------------------------------------------ */
 
 export default function NutritionPage() {
-  const supabase = createClient();
+  const { activePatient } = usePatient();
+  if (!activePatient) {
+    return (
+      <PatientEmptyState
+        title="No Patient Selected"
+        description="Select a patient from the header or enroll a new one to log nutrition data."
+      />
+    );
+  }
+
+  return <PatientNutrition key={activePatient.id} />;
+}
+
+function PatientNutrition() {
   const { activePatient } = usePatient();
   const [selectedMeal, setSelectedMeal] = useState("Breakfast");
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [dailyLogs, setDailyLogs] = useState<any[]>([]);
+  const [dailyLogs, setDailyLogs] = useState<NutritionEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [revision, setRevision] = useState(0);
+  const patientId = activePatient?.id;
+
   useEffect(() => {
-    if (activePatient) {
-        fetchData();
-    } else {
-        setIsLoading(false);
-    }
-  }, [activePatient]);
+    if (!patientId) return;
+    const controller = new AbortController();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const query = new URLSearchParams({ patient_id: patientId, since: today.toISOString() });
 
-  const fetchData = async () => {
-    if (!activePatient) return;
-    setIsLoading(true);
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    localRequest<NutritionEntry[]>(`/api/nutrition?${query}`, { signal: controller.signal })
+      .then(setDailyLogs)
+      .catch(() => {
+        if (!controller.signal.aborted) toast.error("Failed to load today's nutrition records.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
 
-      // Fetch today's logs for the ACTIVE PATIENT
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const { data: logs, error } = await supabase
-        .from('nutrition_logs')
-        .select('*')
-        .eq('patient_id', activePatient.id)
-        .gte('logged_at', today.toISOString())
-        .order('logged_at', { ascending: false });
-
-      if (error) throw error;
-      setDailyLogs(logs || []);
-    } catch (err: any) {
-      console.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return () => controller.abort();
+  }, [patientId, revision]);
 
   const calculateTargetIntake = () => {
     if (!activePatient || !activePatient.dob) return 2200; // Default fallback
@@ -226,32 +226,27 @@ export default function NutritionPage() {
     setIsSubmitting(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Auth required");
+      if (!patientId) throw new Error("Select a patient first");
 
-      if (!activePatient) throw new Error("Select a patient first");
-
-      const logsToInsert = entries.map(entry => ({
-        profile_id: user.id,
-        patient_id: activePatient.id,
-        meal_type: selectedMeal,
-        food_name: entry.name,
-        quantity: entry.quantity,
-        calories: entry.calories || 0,
-        protein: entry.protein || 0,
-        carbs: entry.carbs || 0,
-        fats: entry.fats || 0,
-        logged_at: new Date().toISOString()
-      }));
-
-      const { error } = await supabase.from('nutrition_logs').insert(logsToInsert);
-      if (error) throw error;
+      await postLocal("/api/nutrition", {
+        patient_id: patientId,
+        logged_at: new Date().toISOString(),
+        entries: entries.map(entry => ({
+          meal_type: selectedMeal,
+          food_name: entry.name,
+          quantity: entry.quantity,
+          calories: entry.calories || 0,
+          protein: entry.protein || 0,
+          carbs: entry.carbs || 0,
+          fats: entry.fats || 0,
+        })),
+      });
 
       toast.success("Nutrition records synchronized.");
       setEntries([]);
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message);
+      setRevision((count) => count + 1);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save nutrition records.");
     } finally {
       setIsSubmitting(false);
     }
@@ -299,15 +294,6 @@ export default function NutritionPage() {
             <div className="w-10 h-10 border-2 border-[#86efac]/10 border-t-[#86efac] rounded-full animate-spin" />
             <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Accessing Nutritional Core</p>
         </div>
-    );
-  }
-
-  if (!activePatient) {
-    return (
-      <PatientEmptyState 
-        title="No Patient Selected"
-        description="Enroll or select a patient to access the nutrition planner, calorie logs, and dietary analysis."
-      />
     );
   }
 

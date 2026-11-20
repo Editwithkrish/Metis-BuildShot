@@ -1,24 +1,30 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { storage, getRequestAccount } from "@/lib/local/storage";
+import { NextResponse, type NextRequest } from "next/server";
 
-/**
- * Next.js 16 Proxy Function
- * Replaces the traditional middleware.ts convention.
- * Acts as the network boundary for all incoming requests.
- */
 export async function proxy(request: NextRequest) {
-  return await updateSession(request)
+  const path = request.nextUrl.pathname;
+  const account = await getRequestAccount(request);
+  const redirect = (destination: string) => NextResponse.redirect(new URL(destination, request.url));
+
+  // Preserve the legacy dashboard links to the field workspace.
+  if (path === "/dashboard/asha" || path.startsWith("/dashboard/asha/")) {
+    return redirect(path.slice("/dashboard".length));
+  }
+  if (path === "/asha/login") return NextResponse.next();
+  if (path === "/asha" || path.startsWith("/asha/")) {
+    return account?.role === "asha" ? NextResponse.next() : redirect("/asha/login");
+  }
+  if (!account) return redirect("/auth");
+  if (account.role === "asha") return redirect("/asha");
+
+  const onboarded = Boolean(await storage("getProfile", account));
+  if (path === "/onboarding") {
+    return onboarded ? redirect("/dashboard") : NextResponse.next();
+  }
+
+  return onboarded ? NextResponse.next() : redirect("/onboarding");
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
-}
+  matcher: ["/dashboard/:path*", "/onboarding", "/asha/:path*"],
+};

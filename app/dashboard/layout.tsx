@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,7 +11,6 @@ import {
   Activity,
   Stethoscope,
   Syringe,
-  LogOut,
   Bell,
   Menu,
   AudioLines,
@@ -19,12 +18,13 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
-import { PatientProvider } from "@/lib/context/patient-context";
+import { PatientProvider, usePatient } from "@/lib/context/patient-context";
 import { PatientSwitcher } from "@/components/dashboard/patient-switcher";
+import { SignOutButton } from "@/components/sign-out-button";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: UsersRound, label: "ASHA Field Panel", href: "/asha" },
+  { icon: UsersRound, label: "ASHA Field Panel", href: "/asha/login" },
   { icon: Baby, label: "Cry Decoder", href: "/dashboard/cry-decoder" },
   { icon: ScanEye, label: "Malnutrition Scan", href: "/dashboard/is-malnutrition" },
   { icon: TrendingUp, label: "Growth", href: "/dashboard/growth" },
@@ -34,30 +34,32 @@ const sidebarItems = [
   { icon: Syringe, label: "Vaccines", href: "/dashboard/vaccinations" },
 ];
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { t } = useLanguage();
-  const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
-
-  useEffect(() => {
-    const data = localStorage.getItem("metis_onboarding_data");
-    if (data) {
-      setUserData(JSON.parse(data));
-    }
-  }, []);
-
-  const userName = userData?.name || "Sarah Wilson";
-  const userRole = userData?.role === 'mother' ? "MOM" :
-    userData?.role === 'doc' ? "CLINICAL DOCTOR" :
-      userData?.role?.toUpperCase() || "INDIVIDUAL";
-
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <PatientProvider>
+      <DashboardShell>{children}</DashboardShell>
+    </PatientProvider>
+  );
+}
+
+const roleLabels = {
+  mother: "MOM",
+  doc: "CLINICAL DOCTOR",
+  ind: "INDIVIDUAL",
+  caregiver: "CAREGIVER",
+  hworker: "HEALTH WORKER",
+  res: "RESEARCHER",
+};
+
+function DashboardShell({ children }: { children: React.ReactNode }) {
+  const { t } = useLanguage();
+  const { profile } = usePatient();
+  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const userName = profile?.full_name || "METIS";
+  const userRole = profile ? roleLabels[profile.role] : "";
+
+  return (
       <div className="min-h-screen bg-background text-foreground flex">
         {/* Mobile overlay */}
         {sidebarOpen && (
@@ -98,9 +100,7 @@ export default function DashboardLayout({
           </nav>
 
           <div className="flex flex-col gap-2">
-            <button title="Logout" className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors">
-              <LogOut className="w-[18px] h-[18px]" />
-            </button>
+            <SignOutButton className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors" />
           </div>
         </aside>
 
@@ -156,6 +156,5 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
-    </PatientProvider>
   );
 }
