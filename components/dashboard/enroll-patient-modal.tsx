@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, User, Stethoscope, Calendar, Scale, Ruler, CheckCircle2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { postLocal } from "@/lib/local/request";
+import { type Patient } from "@/lib/local/records";
 import { toast } from "sonner";
 import { usePatient } from "@/lib/context/patient-context";
 
@@ -38,31 +39,20 @@ export function EnrollPatientModal({ isOpen, onClose }: EnrollPatientModalProps)
     }
 
     setIsSubmitting(true);
-    const supabase = createClient();
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Authentication required");
-
-      const { data, error } = await supabase
-        .from('patients')
-        .insert({
-          owner_id: user.id,
-          full_name: formData.name,
-          dob: formData.dob || null,
-          gender: formData.gender,
-          initial_weight: formData.weight,
-          initial_height: formData.height,
-          relationship_type: formData.relationshipType
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+      const patient = await postLocal<Patient>("/api/patients", {
+        full_name: formData.name,
+        dob: formData.dob || null,
+        gender: formData.gender,
+        initial_weight: formData.weight,
+        initial_height: formData.height,
+        relationship_type: formData.relationshipType,
+      });
 
       toast.success(`${userRole === 'mother' ? 'Baby' : 'Patient'} enrolled successfully!`);
       await refreshPatients();
-      if (data) setActivePatient(data);
+      setActivePatient(patient);
       onClose();
       setFormData({
         name: "",
@@ -72,9 +62,8 @@ export function EnrollPatientModal({ isOpen, onClose }: EnrollPatientModalProps)
         height: "",
         relationshipType: userRole === 'mother' ? 'child' : 'patient'
       });
-    } catch (error: any) {
-      console.error("Enrollment error:", error.message);
-      toast.error("Failed to enroll patient.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to enroll patient.");
     } finally {
       setIsSubmitting(false);
     }

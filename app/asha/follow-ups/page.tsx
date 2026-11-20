@@ -233,7 +233,7 @@ export default function FollowUpQueuePage() {
             <span className="flex items-center gap-3 px-3 py-2.5 text-xs text-muted-foreground"><BellRing className="h-4 w-4" />Alerts<span className="ml-auto font-mono text-[9px]">{stats.urgent}</span></span>
           </nav>
           <div className="mt-8 border border-foreground/10 bg-foreground/[0.02] p-4"><div className="flex items-center gap-2 text-[#86efac]"><Route className="h-4 w-4" /><span className="text-[10px] font-mono uppercase tracking-wider">Today’s route</span></div><p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">{stats.today} visits across {stats.villages} villages. Urgent cases appear first.</p></div>
-          <Link href="/dashboard" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground"><ArrowLeft className="h-3.5 w-3.5" /> Family dashboard</Link>
+          <Link href="/auth" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground"><ArrowLeft className="h-3.5 w-3.5" /> Family login</Link>
         </aside>
 
         <section className="min-w-0 p-4 sm:p-6 lg:p-8">

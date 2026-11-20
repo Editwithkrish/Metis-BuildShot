@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { 
   ShieldCheck, 
   Calendar, 
@@ -153,7 +152,6 @@ function ConfirmationModal({ isOpen, onConfirm, onCancel, vaccineName }: {
 
 
 export default function VaccinationsPage() {
-  const supabase = createClient();
   const { activePatient } = usePatient();
   const [vaccineGroups, setVaccineGroups] = useState(schedule);
   const [modalState, setModalState] = useState<{ isOpen: boolean, vaccineId: string, vaccineName: string } | null>(null);

@@ -257,7 +257,7 @@ export default function ChildRegistryPage() {
             <div className="flex items-center gap-2 text-[#86efac]"><ShieldCheck className="h-4 w-4" /><span className="text-[10px] font-mono uppercase tracking-wider">Offline registry</span></div>
             <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">Enrolments and visit updates remain available without a network.</p>
           </div>
-          <Link href="/dashboard" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground"><ArrowLeft className="h-3.5 w-3.5" /> Family dashboard</Link>
+          <Link href="/auth" className="mt-4 flex items-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground"><ArrowLeft className="h-3.5 w-3.5" /> Family login</Link>
         </aside>
 
         <section className="min-w-0 p-4 sm:p-6 lg:p-8">

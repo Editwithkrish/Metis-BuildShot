@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { localRequest } from "@/lib/local/request";
+import { type NutritionEntry } from "@/lib/local/records";
+import { toast } from "sonner";
 import { 
   History, 
   Calendar, 
@@ -17,43 +19,31 @@ import {
 } from "lucide-react";
 
 export default function NutritionLogsPage() {
-  const supabase = createClient();
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<NutritionEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
-    fetchLogs();
+    const controller = new AbortController();
+    localRequest<NutritionEntry[]>(`/api/nutrition?order=${sortOrder}`, { signal: controller.signal })
+      .then(setLogs)
+      .catch(() => {
+        if (!controller.signal.aborted) toast.error("Failed to load nutrition history.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
+
+    return () => controller.abort();
   }, [sortOrder]);
-
-  const fetchLogs = async () => {
-    setIsLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('nutrition_logs')
-        .select('*')
-        .eq('profile_id', user.id)
-        .order('logged_at', { ascending: sortOrder === 'asc' });
-
-      if (error) throw error;
-      setLogs(data || []);
-    } catch (err: any) {
-      console.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const filteredLogs = filterType === "All" 
     ? logs 
     : logs.filter(log => log.meal_type === filterType);
 
   // Grouping by date
-  const groupedLogs = filteredLogs.reduce((acc: any, log: any) => {
+  const groupedLogs = filteredLogs.reduce<Record<string, NutritionEntry[]>>((acc, log) => {
     const date = new Date(log.logged_at).toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
     if (!acc[date]) acc[date] = [];
     acc[date].push(log);

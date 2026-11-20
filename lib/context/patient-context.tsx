@@ -1,17 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-interface Patient {
-  id: string;
-  full_name: string;
-  dob: string;
-  gender: string;
-  initial_weight: string;
-  initial_height: string;
-  relationship_type: string;
-}
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { localRequest } from "@/lib/local/request";
+import { type Patient, type Profile } from "@/lib/local/records";
 
 interface PatientContextType {
   activePatient: Patient | null;
@@ -19,6 +10,7 @@ interface PatientContextType {
   setActivePatient: (patient: Patient) => void;
   refreshPatients: () => Promise<void>;
   isLoading: boolean;
+  profile: Profile | null;
   userRole: string | null;
 }
 
@@ -27,58 +19,24 @@ const PatientContext = createContext<PatientContextType | undefined>(undefined);
 export function PatientProvider({ children }: { children: React.ReactNode }) {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [activePatient, setActivePatientState] = useState<Patient | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const hasSupabaseConfig = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  );
-  const supabase = hasSupabaseConfig ? createClient() : null;
-
-  const refreshPatients = async () => {
-    if (!supabase) {
-      setIsLoading(false);
-      return;
-    }
-
+  const refreshPatients = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const data = await localRequest<{ patients: Patient[]; profile: Profile | null }>("/api/patients");
+      setProfile(data.profile);
+      setPatients(data.patients);
 
-      const [patientsRes, profileRes] = await Promise.all([
-        supabase
-          .from("patients")
-          .select("*")
-          .eq("owner_id", user.id)
-          .order("created_at", { ascending: true }),
-        supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single()
-      ]);
-
-      if (patientsRes.error) throw patientsRes.error;
-      if (profileRes.data) setUserRole(profileRes.data.role);
-      
-      const data = patientsRes.data;
-      setPatients(data || []);
-      
-      // Auto-select patient from localStorage or default to first one
       const savedId = localStorage.getItem("metis_active_patient_id");
-      const savedPatient = data?.find((p: Patient) => p.id === savedId);
-      
-      if (savedPatient) {
-        setActivePatientState(savedPatient);
-      } else if (data && data.length > 0) {
-        setActivePatientState(data[0]);
-        localStorage.setItem("metis_active_patient_id", data[0].id);
-      }
-    } catch (err) {
-      console.error("Error fetching patients:", err);
+      const selected = data.patients.find((patient) => patient.id === savedId) ?? data.patients[0] ?? null;
+      setActivePatientState(selected);
+      if (selected) localStorage.setItem("metis_active_patient_id", selected.id);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const setActivePatient = (patient: Patient) => {
     setActivePatientState(patient);
@@ -87,10 +45,10 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refreshPatients();
-  }, []);
+  }, [refreshPatients]);
 
   return (
-    <PatientContext.Provider value={{ activePatient, patients, setActivePatient, refreshPatients, isLoading, userRole }}>
+    <PatientContext.Provider value={{ activePatient, patients, setActivePatient, refreshPatients, isLoading, profile, userRole: profile?.role ?? null }}>
       {children}
     </PatientContext.Provider>
   );

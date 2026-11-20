@@ -37,11 +37,10 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Never cache APIs, authentication callbacks, cross-origin resources, or maps.
+  // Never cache APIs, cross-origin resources, or maps.
   if (
     url.origin !== self.location.origin ||
-    url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/auth/callback')
+    url.pathname.startsWith('/api/')
   ) {
     return;
   }
